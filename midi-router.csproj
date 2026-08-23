@@ -16,8 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include=".github\skills\hello\SKILL.md" />
-    <None Include=".specify\memory\constitution.md" />
     <None Include="midi-router.Tests\midi-router.Tests.csproj" />
   </ItemGroup>
   

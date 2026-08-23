@@ -1,78 +1,50 @@
-<!--
-Sync Impact Report
-- Version change: none → 1.0.0
-- Modified principles: none; initial constitution established
-- Added sections: Core Principles, Technical Constraints, Development Workflow
-- Removed sections: none
-- Follow-up TODOs: RATIFICATION_DATE requires confirmation if 2026-08-21 is not the adoption date
--->
-# Midi-Router Constitution
+# [PROJECT_NAME] Constitution
+<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 
 ## Core Principles
 
-### I. Lightweight and Modular
-Midi-Router MUST remain lightweight and modular. Features MUST have a clear,
-limited responsibility and MUST interact through explicit, stable contracts.
-Dependencies between modules MUST be kept minimal and justified. This keeps the
-background process maintainable, testable, and suitable for incremental extension.
+### [PRINCIPLE_1_NAME]
+<!-- Example: I. Library-First -->
+[PRINCIPLE_1_DESCRIPTION]
+<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-### II. Background-Process First
-The application MUST treat unattended background execution as the primary
-runtime scenario. Features MUST avoid blocking the process, MUST support orderly
-startup and shutdown, and MUST handle recoverable failures without terminating
-unrelated functionality. User-interface concerns MUST remain separate from
-background processing concerns.
+### [PRINCIPLE_2_NAME]
+<!-- Example: II. CLI Interface -->
+[PRINCIPLE_2_DESCRIPTION]
+<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
 
-### III. Tested Features
-Every feature MUST have automated tests covering its intended behavior and
-important failure paths before it is considered complete. Tests MUST be
-repeatable and MUST run independently of physical MIDI hardware where practical;
-hardware-dependent behavior MUST be isolated behind testable abstractions. This
-ensures that modular background behavior remains reliable as the application grows.
+### [PRINCIPLE_3_NAME]
+<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+[PRINCIPLE_3_DESCRIPTION]
+<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
-### IV. Documented Behavior
-Every feature MUST include user-facing and developer-facing documentation
-appropriate to its scope. Documentation MUST describe configuration, observable
-behavior, usage, and relevant limitations. Public contracts and behavior changes
-MUST be updated in the same change as the implementation so the documentation
-remains an accurate operational reference.
+### [PRINCIPLE_4_NAME]
+<!-- Example: IV. Integration Testing -->
+[PRINCIPLE_4_DESCRIPTION]
+<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
 
-### V. Simplicity and Explicit Change
-The implementation MUST prefer the simplest design that satisfies the
-requirements. New abstractions, dependencies, and runtime complexity MUST have a
-clear benefit and MUST be justified in the change description. Breaking changes
-MUST be identified explicitly and accompanied by migration guidance when needed.
+### [PRINCIPLE_5_NAME]
+<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
+[PRINCIPLE_5_DESCRIPTION]
+<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-## Technical Constraints
+## [SECTION_2_NAME]
+<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
-Midi-Router MUST target .NET 8 on Windows and MUST follow the existing WPF
-application model unless a documented architectural decision changes that
-constraint. Core routing and processing logic MUST remain separable from WPF so
-that it can be tested without a graphical environment. Configuration and external
-MIDI resources MUST be accessed through replaceable abstractions where they affect
-feature behavior.
+[SECTION_2_CONTENT]
+<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
 
-## Development Workflow
+## [SECTION_3_NAME]
+<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
 
-Changes MUST be reviewed against this constitution. A feature is complete only
-when its implementation, automated tests, and relevant documentation are present
-and validated. Changes MUST include tests for regressions and MUST preserve the
-existing module boundaries. Reviewers MUST reject unexplained complexity,
-untested feature behavior, or stale documentation.
+[SECTION_3_CONTENT]
+<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
 ## Governance
+<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-This constitution defines the non-negotiable engineering principles for
-Midi-Router and supersedes conflicting project practices. Amendments MUST be
-proposed as repository changes, explain their rationale and impact, and update
-the version and last-amended date. Changes to principles or sections MUST be
-reviewed before merging.
+[GOVERNANCE_RULES]
+<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-The constitution uses semantic versioning: MAJOR for incompatible removals or
-redefinitions, MINOR for new principles or materially expanded guidance, and
-PATCH for clarifications and non-semantic wording changes. Every feature change
-and review MUST verify compliance with the current constitution. Any exception
-MUST be documented with its scope, rationale, owner, and expiration or review
-date.
-
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirm adoption date | **Last Amended**: 2026-08-22
+**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
