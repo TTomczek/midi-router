@@ -1,50 +1,94 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: unratified scaffold -> 1.0.0
+- Modified principles: placeholder principles -> Modular Architecture; Background-Process
+  Reliability; Test-Driven Development; Hardware-Isolated Integration Testing; Simplicity
+  and Extensibility
+- Added sections: Platform and Runtime Constraints; Development Workflow and Quality Gates
+- Removed sections: none
+- Follow-up TODOs: RATIFICATION_DATE remains TODO because the original adoption date is
+  not documented in the repository.
+-->
+
+# MIDI Router Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Modular Architecture
+The application MUST be organized into focused, independently understandable modules with
+explicit interfaces. Device discovery, message routing, channel transformation, user
+interface, and process-lifecycle concerns MUST remain separable so that a change in one
+concern does not require unrelated changes. This preserves the lightweight design and
+enables replacement or extension of platform integrations.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Background-Process Reliability
+The router MUST remain safe and predictable while operating primarily as a background
+process. Message handling MUST avoid blocking the routing path, failures in one device
+MUST NOT silently corrupt or stop unrelated routes, and lifecycle transitions such as
+startup, minimization to the Windows tray, shutdown, and device refresh MUST have explicit
+behavior. Operational failures MUST be surfaced through the application's established
+status or diagnostic mechanisms.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Test-Driven Development
+New behavior and behavior changes MUST follow the red-green-refactor cycle: a failing
+automated test is written first, the smallest implementation is added to make it pass,
+and the design is then improved without changing behavior. Tests MUST cover observable
+contracts, including message transformation, routing decisions, device enumeration
+states, and failure handling. This is non-negotiable because the application interacts
+with hardware and asynchronous background processes that are difficult to validate
+manually.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Hardware-Isolated Integration Testing
+Tests MUST be runnable without physical MIDI hardware. Platform and device access MUST
+be abstracted behind interfaces or providers, and integration tests MUST use deterministic
+fakes or test doubles for unavailable hardware. Tests that verify contracts across
+modules MUST be added when a shared interface, message format, or device lifecycle
+behavior changes, protecting the boundary between portable application logic and
+Windows MIDI Services.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Simplicity and Extensibility
+Implementations MUST choose the smallest design that satisfies the current requirement
+while preserving clear extension points for additional MIDI versions, message types,
+devices, and routing policies. New abstractions MUST have a demonstrated consumer or
+testable contract; speculative frameworks and duplicate pathways MUST NOT be introduced.
+This keeps the application lightweight without making future supported behavior costly to
+add.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Platform and Runtime Constraints
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+MIDI Router MUST target Windows and .NET 8 as documented project requirements. Windows
+MIDI Services is the authoritative runtime integration for MIDI device discovery and
+endpoints. Platform-specific code MUST be isolated behind testable boundaries, and the
+application MUST handle unavailable runtime services or empty device lists with an
+explicit user-visible or diagnostic status rather than an unexplained failure.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow and Quality Gates
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Every change MUST include or update automated tests for its externally observable
+behavior. A change is ready for review only when `dotnet build` and `dotnet test` pass from
+the repository root, and tests do not depend on physical MIDI hardware. Reviews MUST
+check modularity, lifecycle safety, error visibility, and constitution compliance.
+Documentation MUST be updated when user-visible behavior, runtime prerequisites, or
+development commands change.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution is the highest-level project governance document. When another
+practice conflicts with it, the constitution takes precedence until it is amended.
+Contributors MUST identify applicable principles during design and review, and reviewers
+MUST reject changes that violate a non-negotiable rule unless the constitution is amended
+in the same change.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Amendments MUST document the affected principles or sections, the reason for the change,
+and any migration or compatibility impact. The amendment MUST update the version and last
+amended date. Versioning follows semantic versioning: MAJOR for incompatible removals or
+redefinitions, MINOR for new principles or materially expanded governance, and PATCH for
+clarifications and non-semantic corrections.
+
+Compliance MUST be reviewed for every feature plan, implementation, and pull request.
+The development workflow quality gates are the minimum evidence of compliance; a
+maintainer MAY require additional tests or review for changes affecting hardware,
+asynchronous processing, or public interfaces. Any unresolved exception MUST be recorded
+with an owner and a plan to remove it.
+
+**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date is not documented | **Last Amended**: 2026-08-23
