@@ -1,5 +1,6 @@
 using System.Windows;
 using Forms = System.Windows.Forms;
+using Controls = System.Windows.Controls;
 
 namespace midi_router;
 
@@ -8,10 +9,13 @@ public partial class MainWindow : Window
     private readonly MidiInputDeviceViewModel viewModel;
     private readonly Forms.NotifyIcon trayIcon;
     private readonly Forms.ContextMenuStrip trayMenu;
+    private readonly ThemeSettingsViewModel themeSettings;
 
-    public MainWindow()
+    public MainWindow(ThemeSettingsViewModel themeSettings)
     {
         InitializeComponent();
+        this.themeSettings = themeSettings;
+        DataContext = themeSettings;
         trayMenu = new Forms.ContextMenuStrip();
         trayMenu.Items.Add("Show", null, (_, _) => RestoreFromTray());
         trayMenu.Items.Add(new Forms.ToolStripSeparator());
@@ -25,7 +29,7 @@ public partial class MainWindow : Window
         };
         trayIcon.DoubleClick += (_, _) => RestoreFromTray();
         viewModel = new MidiInputDeviceViewModel(new WindowsMidiInputDeviceProvider());
-        DataContext = viewModel;
+        DeviceList.DataContext = viewModel;
         Loaded += async (_, _) => await viewModel.RefreshAsync();
     }
 
@@ -43,6 +47,29 @@ public partial class MainWindow : Window
         Show();
         WindowState = WindowState.Normal;
         Activate();
+    }
+
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Controls.Button button)
+        {
+            button.ContextMenu.IsOpen = true;
+        }
+    }
+
+    private void SettingsMenu_Opened(object sender, RoutedEventArgs e)
+    {
+        LightMenuItem.IsChecked = themeSettings.CurrentMode == AppearanceMode.Light;
+        DarkMenuItem.IsChecked = themeSettings.CurrentMode == AppearanceMode.Dark;
+        OsDefaultMenuItem.IsChecked = themeSettings.CurrentMode == AppearanceMode.OsDefault;
+    }
+
+    private void AppearanceMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Controls.MenuItem { Tag: string value })
+        {
+            themeSettings.Select(AppearanceModeExtensions.Parse(value));
+        }
     }
 
     protected override void OnClosed(EventArgs e)

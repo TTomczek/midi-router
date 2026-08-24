@@ -1,5 +1,3 @@
-﻿using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace midi_router
@@ -9,6 +7,43 @@ namespace midi_router
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        private ThemeManager? themeManager;
+        private ThemeSettingsViewModel? themeSettings;
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            themeManager = new ThemeManager(
+                new JsonSettingsStore(),
+                new WindowsOperatingSystemThemeProvider(),
+                ApplyPalette,
+                message => System.Diagnostics.Debug.WriteLine(message));
+            themeManager.Load();
+            themeSettings = new ThemeSettingsViewModel(themeManager);
+
+            var window = new MainWindow(themeSettings);
+            MainWindow = window;
+            window.Show();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            themeSettings?.Dispose();
+            themeManager?.Dispose();
+            base.OnExit(e);
+        }
+
+        private void ApplyPalette(ThemePalette palette)
+        {
+            var uri = new Uri(
+                palette == ThemePalette.Dark
+                    ? "ThemeResources/Dark.xaml"
+                    : "ThemeResources/Light.xaml",
+                UriKind.Relative);
+            var dictionary = new ResourceDictionary { Source = uri };
+            Resources.MergedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(dictionary);
+        }
     }
 
 }
