@@ -24,6 +24,47 @@ public sealed class JsonSettingsStoreTests
         }
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RoundTripsMinimizeToTray(bool minimizeToTray)
+    {
+        var path = TemporaryPath();
+        try
+        {
+            var store = new JsonSettingsStore(path);
+            store.Save(new ApplicationSettings(AppearanceMode.Dark, minimizeToTray));
+
+            var settings = store.Load();
+
+            Assert.Equal(AppearanceMode.Dark, settings.AppearanceMode);
+            Assert.Equal(minimizeToTray, settings.MinimizeToTray);
+        }
+        finally
+        {
+            Delete(path);
+        }
+    }
+
+    [Fact]
+    public void MissingMinimizeToTrayUsesDisabledDefault()
+    {
+        var path = TemporaryPath();
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            File.WriteAllText(path, """{"AppearanceMode":"Dark"}""");
+
+            var settings = new JsonSettingsStore(path).Load();
+
+            Assert.False(settings.MinimizeToTray);
+        }
+        finally
+        {
+            Delete(path);
+        }
+    }
+
     [Fact]
     public void MissingFileUsesOsDefault()
     {

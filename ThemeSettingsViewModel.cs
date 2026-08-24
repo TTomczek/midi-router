@@ -29,14 +29,21 @@ public sealed class ThemeSettingsViewModel : INotifyPropertyChanged, IDisposable
 
     public AppearanceMode CurrentMode => themeManager.CurrentMode;
 
+    public bool MinimizeToTray => themeManager.MinimizeToTray;
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public void Select(AppearanceMode mode) => themeManager.Select(mode);
 
+    public void SetMinimizeToTray(bool enabled) => themeManager.SelectMinimizeToTray(enabled);
+
     public void Dispose() => themeManager.Changed -= OnThemeChanged;
 
     private void OnThemeChanged(object? sender, EventArgs e)
-        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMode)));
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMode)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MinimizeToTray)));
+    }
 
     private sealed class SelectAppearanceModeCommand(ThemeSettingsViewModel owner) : ICommand
     {

@@ -2,7 +2,15 @@
 
 MIDI Router ist eine leichtgewichtige WPF-Anwendung für Windows und .NET 10.
 Beim Start werden alle verfügbaren MIDI-Eingabegeräte mit ihrem Namen angezeigt.
-Beim Minimieren wird das Fenster in den Windows-Infobereich (Tray) verschoben.
+
+## Windows-Infobereich
+
+Über das Einstellungsmenü kann das Minimieren in den Windows-Infobereich aktiviert
+oder deaktiviert werden. Ist die Option aktiviert, wird das Fenster beim Minimieren
+aus der Taskleiste entfernt und bleibt über das Tray-Symbol erreichbar. Ein Linksklick
+auf das Symbol stellt das Fenster wieder her; ein Rechtsklick bietet eine Option zum
+Beenden der Anwendung. Ist die Option deaktiviert, wird das Fenster normal in der
+Taskleiste minimiert. Die Auswahl wird dauerhaft gespeichert.
 
 ## MIDI-Eingabegeräte
 

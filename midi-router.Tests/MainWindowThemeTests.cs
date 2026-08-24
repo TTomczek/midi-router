@@ -15,6 +15,8 @@ public sealed class MainWindowThemeTests
         Assert.Contains("Header=\"Light\"", xaml);
         Assert.Contains("Header=\"Dark\"", xaml);
         Assert.Contains("Header=\"OS default\"", xaml);
+        Assert.Contains("Header=\"Minimize to tray\"", xaml);
+        Assert.Contains("x:Name=\"MinimizeToTrayMenuItem\"", xaml);
     }
 
     private static string FindRepositoryFile(string fileName)

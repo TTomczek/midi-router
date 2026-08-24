@@ -36,6 +36,10 @@
                         <MenuItem x:Name="OsDefaultMenuItem" Header="OS default" Tag="OsDefault"
                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                   IsCheckable="True" Click="AppearanceMenuItem_Click"/>
+                        <Separator/>
+                        <MenuItem x:Name="MinimizeToTrayMenuItem" Header="Minimize to tray"
+                                  Foreground="{DynamicResource PrimaryTextBrush}"
+                                  IsCheckable="True" Click="MinimizeToTrayMenuItem_Click"/>
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>

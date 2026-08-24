@@ -19,7 +19,7 @@ public partial class MainWindow : Window
         trayMenu = new Forms.ContextMenuStrip();
         trayMenu.Items.Add("Show", null, (_, _) => RestoreFromTray());
         trayMenu.Items.Add(new Forms.ToolStripSeparator());
-        trayMenu.Items.Add("Exit", null, (_, _) => Close());
+        trayMenu.Items.Add("Stop", null, (_, _) => Close());
         trayIcon = new Forms.NotifyIcon
         {
             Icon = System.Drawing.SystemIcons.Application,
@@ -27,7 +27,7 @@ public partial class MainWindow : Window
             ContextMenuStrip = trayMenu,
             Visible = true
         };
-        trayIcon.DoubleClick += (_, _) => RestoreFromTray();
+        trayIcon.MouseClick += TrayIcon_MouseClick;
         viewModel = new MidiInputDeviceViewModel(new WindowsMidiInputDeviceProvider());
         DeviceList.DataContext = viewModel;
         Loaded += async (_, _) => await viewModel.RefreshAsync();
@@ -36,9 +36,17 @@ public partial class MainWindow : Window
     protected override void OnStateChanged(EventArgs e)
     {
         base.OnStateChanged(e);
-        if (WindowState == WindowState.Minimized)
+        if (WindowState == WindowState.Minimized && themeSettings.MinimizeToTray)
         {
             Hide();
+        }
+    }
+
+    private void TrayIcon_MouseClick(object? sender, Forms.MouseEventArgs e)
+    {
+        if (e.Button == Forms.MouseButtons.Left)
+        {
+            RestoreFromTray();
         }
     }
 
@@ -62,7 +70,11 @@ public partial class MainWindow : Window
         LightMenuItem.IsChecked = themeSettings.CurrentMode == AppearanceMode.Light;
         DarkMenuItem.IsChecked = themeSettings.CurrentMode == AppearanceMode.Dark;
         OsDefaultMenuItem.IsChecked = themeSettings.CurrentMode == AppearanceMode.OsDefault;
+        MinimizeToTrayMenuItem.IsChecked = themeSettings.MinimizeToTray;
     }
+
+    private void MinimizeToTrayMenuItem_Click(object sender, RoutedEventArgs e)
+        => themeSettings.SetMinimizeToTray(MinimizeToTrayMenuItem.IsChecked);
 
     private void AppearanceMenuItem_Click(object sender, RoutedEventArgs e)
     {
@@ -75,6 +87,7 @@ public partial class MainWindow : Window
     protected override void OnClosed(EventArgs e)
     {
         viewModel.Dispose();
+        trayIcon.MouseClick -= TrayIcon_MouseClick;
         trayIcon.Visible = false;
         trayIcon.Dispose();
         trayMenu.Dispose();

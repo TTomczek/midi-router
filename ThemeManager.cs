@@ -14,6 +14,7 @@ public sealed class ThemeManager : IDisposable
     private readonly IOperatingSystemThemeProvider operatingSystemTheme;
     private readonly Action<ThemePalette> applyPalette;
     private readonly Action<string>? report;
+    private ApplicationSettings settings = new();
     private bool disposed;
 
     public ThemeManager(
@@ -31,6 +32,8 @@ public sealed class ThemeManager : IDisposable
 
     public AppearanceMode CurrentMode { get; private set; } = AppearanceMode.OsDefault;
 
+    public bool MinimizeToTray { get; private set; }
+
     public ThemePalette CurrentPalette { get; private set; } = ThemePalette.Light;
 
     public event EventHandler? Changed;
@@ -39,21 +42,33 @@ public sealed class ThemeManager : IDisposable
     {
         try
         {
-            CurrentMode = settingsStore.Load().AppearanceMode.Normalize();
+            var loadedSettings = settingsStore.Load();
+            settings = loadedSettings with
+            {
+                AppearanceMode = loadedSettings.AppearanceMode.Normalize()
+            };
+            CurrentMode = settings.AppearanceMode;
+            MinimizeToTray = settings.MinimizeToTray;
         }
         catch (IOException exception)
         {
+            settings = new ApplicationSettings();
             CurrentMode = AppearanceMode.OsDefault;
+            MinimizeToTray = false;
             report?.Invoke($"Appearance settings could not be loaded: {exception.Message}");
         }
         catch (UnauthorizedAccessException exception)
         {
+            settings = new ApplicationSettings();
             CurrentMode = AppearanceMode.OsDefault;
+            MinimizeToTray = false;
             report?.Invoke($"Appearance settings could not be loaded: {exception.Message}");
         }
         catch (System.Text.Json.JsonException exception)
         {
+            settings = new ApplicationSettings();
             CurrentMode = AppearanceMode.OsDefault;
+            MinimizeToTray = false;
             report?.Invoke($"Appearance settings could not be loaded: {exception.Message}");
         }
 
@@ -63,20 +78,33 @@ public sealed class ThemeManager : IDisposable
     public void Select(AppearanceMode mode)
     {
         CurrentMode = mode.Normalize();
+        settings = settings with { AppearanceMode = CurrentMode };
+        SaveSettings(settings, "Appearance");
+        ApplyCurrentPalette();
+    }
+
+    public void SelectMinimizeToTray(bool enabled)
+    {
+        MinimizeToTray = enabled;
+        settings = settings with { MinimizeToTray = enabled };
+        SaveSettings(settings, "Minimize-to-tray");
+        Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void SaveSettings(ApplicationSettings value, string settingName)
+    {
         try
         {
-            settingsStore.Save(new ApplicationSettings(CurrentMode));
+            settingsStore.Save(value);
         }
         catch (IOException exception)
         {
-            report?.Invoke($"Appearance settings could not be saved: {exception.Message}");
+            report?.Invoke($"{settingName} settings could not be saved: {exception.Message}");
         }
         catch (UnauthorizedAccessException exception)
         {
-            report?.Invoke($"Appearance settings could not be saved: {exception.Message}");
+            report?.Invoke($"{settingName} settings could not be saved: {exception.Message}");
         }
-
-        ApplyCurrentPalette();
     }
 
     public void Dispose()
