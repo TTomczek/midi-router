@@ -8,19 +8,29 @@ namespace midi_router;
 public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposable
 {
     private readonly MidiDeviceMonitor monitor;
-    private readonly ObservableCollection<MidiInputDevice> devices = new();
+    private readonly ApplicationSettingsCoordinator? settings;
+    private readonly ObservableCollection<MidiInputDeviceRow> rows = new();
+    private readonly HashSet<string> selectedDeviceIds;
     private int disposed;
     private DeviceOverviewState state = DeviceOverviewState.Loading;
     private string? statusMessage;
 
-    public MidiInputDeviceViewModel(IMidiInputDeviceProvider provider)
+    public MidiInputDeviceViewModel(
+        IMidiInputDeviceProvider provider,
+        ApplicationSettingsCoordinator? settings = null)
     {
-        Devices = new ReadOnlyObservableCollection<MidiInputDevice>(devices);
+        this.settings = settings;
+        selectedDeviceIds = new HashSet<string>(
+            settings?.Settings.SelectedDeviceIds ?? Array.Empty<string>(),
+            StringComparer.Ordinal);
+        Devices = new ReadOnlyObservableCollection<MidiInputDeviceRow>(rows);
         monitor = new MidiDeviceMonitor(provider);
         monitor.SnapshotAvailable += OnSnapshotAvailable;
     }
 
-    public ReadOnlyObservableCollection<MidiInputDevice> Devices { get; }
+    public ReadOnlyObservableCollection<MidiInputDeviceRow> Devices { get; }
+
+    public IReadOnlyCollection<string> SelectedDeviceIds => selectedDeviceIds;
 
     public DeviceOverviewState State
     {
@@ -39,14 +49,34 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
     public Task RefreshAsync(CancellationToken cancellationToken = default)
         => monitor.StartAsync(cancellationToken);
 
+    public void ToggleSelection(string endpointDeviceId)
+    {
+        if (!selectedDeviceIds.Add(endpointDeviceId))
+        {
+            selectedDeviceIds.Remove(endpointDeviceId);
+        }
+
+        foreach (var row in rows.Where(row => row.EndpointDeviceId == endpointDeviceId))
+        {
+            row.IsSelected = selectedDeviceIds.Contains(endpointDeviceId);
+        }
+
+        settings?.Update(
+            current => current with { SelectedDeviceIds = selectedDeviceIds.ToArray() },
+            "Device selection");
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDeviceIds)));
+    }
+
     private void OnSnapshotAvailable(object? sender, DeviceOverviewSnapshot snapshot)
     {
         void Apply()
         {
-            devices.Clear();
+            rows.Clear();
             foreach (var device in snapshot.Devices)
             {
-                devices.Add(device);
+                rows.Add(new MidiInputDeviceRow(
+                    device,
+                    selectedDeviceIds.Contains(device.EndpointDeviceId)));
             }
 
             State = snapshot.State;

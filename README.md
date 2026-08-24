@@ -25,6 +25,11 @@ Die Liste wird nach dem Anschließen oder Entfernen eines Geräts automatisch
 aktualisiert. Die Überwachung läuft im Hintergrund und wird beim Beenden sauber
 gestoppt.
 
+Geräte können durch Anklicken ihrer Zeile für die spätere Verarbeitung ausgewählt
+werden. Ein erneuter Klick hebt die Auswahl auf; ausgewählte Zeilen werden
+hervorgehoben. Die Auswahl wird anhand der eindeutigen Geräte-ID gespeichert und
+nach einem Neustart sowie beim Wiederverbinden desselben Geräts wiederhergestellt.
+
 Für jedes gefundene Eingabegerät erstellt die Anwendung einen virtuellen MIDI-
 Ausgang mit dem Namen `MIDI Router - <Gerätename>`. Eingehende MIDI-1- und
 MIDI-2-Channel-Voice-Nachrichten werden auf den pro Gerät ausgewählten

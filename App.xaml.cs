@@ -13,15 +13,17 @@ namespace midi_router
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            themeManager = new ThemeManager(
+            var settingsCoordinator = new ApplicationSettingsCoordinator(
                 new JsonSettingsStore(),
-                new WindowsOperatingSystemThemeProvider(),
-                ApplyPalette,
                 message => System.Diagnostics.Debug.WriteLine(message));
+            themeManager = new ThemeManager(
+                settingsCoordinator,
+                new WindowsOperatingSystemThemeProvider(),
+                ApplyPalette);
             themeManager.Load();
             themeSettings = new ThemeSettingsViewModel(themeManager);
 
-            var window = new MainWindow(themeSettings);
+            var window = new MainWindow(themeSettings, settingsCoordinator);
             MainWindow = window;
             window.Show();
         }

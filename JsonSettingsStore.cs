@@ -33,7 +33,7 @@ public sealed class JsonSettingsStore : ISettingsStore
         var settings = JsonSerializer.Deserialize<ApplicationSettings>(json, SerializerOptions);
         return settings is null
             ? new ApplicationSettings()
-            : settings with { AppearanceMode = Normalize(settings.AppearanceMode) };
+            : Normalize(settings);
     }
 
     public void Save(ApplicationSettings settings)
@@ -48,7 +48,7 @@ public sealed class JsonSettingsStore : ISettingsStore
         try
         {
             File.WriteAllText(temporaryPath, JsonSerializer.Serialize(
-                settings with { AppearanceMode = Normalize(settings.AppearanceMode) },
+                Normalize(settings),
                 SerializerOptions));
             File.Move(temporaryPath, filePath, overwrite: true);
         }
@@ -63,4 +63,14 @@ public sealed class JsonSettingsStore : ISettingsStore
 
     private static AppearanceMode Normalize(AppearanceMode mode)
         => Enum.IsDefined(mode) ? mode : AppearanceMode.OsDefault;
+
+    private static ApplicationSettings Normalize(ApplicationSettings settings)
+        => settings with
+        {
+            AppearanceMode = Normalize(settings.AppearanceMode),
+            SelectedDeviceIds = (settings.SelectedDeviceIds ?? Array.Empty<string>())
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToArray()
+        };
 }

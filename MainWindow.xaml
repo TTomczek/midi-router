@@ -64,7 +64,8 @@
                                VerticalAlignment="Center"/>
                 </DockPanel>
                 <ListView x:Name="DeviceList" Grid.Row="1" ItemsSource="{Binding Devices}"
-                          Foreground="{DynamicResource PrimaryTextBrush}">
+                          Foreground="{DynamicResource PrimaryTextBrush}"
+                          PreviewMouseLeftButtonDown="DeviceList_PreviewMouseLeftButtonDown">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="DEVICE" DisplayMemberBinding="{Binding Name}" Width="420"/>

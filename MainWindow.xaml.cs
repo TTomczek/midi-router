@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using Forms = System.Windows.Forms;
 using Controls = System.Windows.Controls;
 
@@ -11,7 +12,9 @@ public partial class MainWindow : Window
     private readonly Forms.ContextMenuStrip trayMenu;
     private readonly ThemeSettingsViewModel themeSettings;
 
-    public MainWindow(ThemeSettingsViewModel themeSettings)
+    public MainWindow(
+        ThemeSettingsViewModel themeSettings,
+        ApplicationSettingsCoordinator? settingsCoordinator = null)
     {
         InitializeComponent();
         this.themeSettings = themeSettings;
@@ -28,7 +31,9 @@ public partial class MainWindow : Window
             Visible = true
         };
         trayIcon.MouseClick += TrayIcon_MouseClick;
-        viewModel = new MidiInputDeviceViewModel(new WindowsMidiInputDeviceProvider());
+        viewModel = new MidiInputDeviceViewModel(
+            new WindowsMidiInputDeviceProvider(),
+            settingsCoordinator);
         DeviceList.DataContext = viewModel;
         Loaded += async (_, _) => await viewModel.RefreshAsync();
     }
@@ -83,6 +88,17 @@ public partial class MainWindow : Window
             themeSettings.Select(AppearanceModeExtensions.Parse(value));
         }
     }
+
+    private void DeviceList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is DependencyObject source &&
+                Controls.ItemsControl.ContainerFromElement(DeviceList, source) is Controls.ListViewItem item &&
+                item.DataContext is MidiInputDeviceRow row)
+            {
+                viewModel.ToggleSelection(row.EndpointDeviceId);
+                e.Handled = true;
+            }
+        }
 
     protected override void OnClosed(EventArgs e)
     {

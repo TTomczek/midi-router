@@ -73,6 +73,48 @@ public sealed class JsonSettingsStoreTests
     }
 
     [Fact]
+    public void RoundTripsSelectedDeviceIds()
+    {
+        var path = TemporaryPath();
+        try
+        {
+            var store = new JsonSettingsStore(path);
+            store.Save(new ApplicationSettings(
+                AppearanceMode.Dark,
+                true,
+                new[] { "device-a", "device-b" }));
+
+            var settings = store.Load();
+
+            Assert.Equal(new[] { "device-a", "device-b" }, settings.SelectedDeviceIds);
+            Assert.Equal(AppearanceMode.Dark, settings.AppearanceMode);
+            Assert.True(settings.MinimizeToTray);
+        }
+        finally
+        {
+            Delete(path);
+        }
+    }
+
+    [Fact]
+    public void NormalizesSelectedDeviceIds()
+    {
+        var path = TemporaryPath();
+        try
+        {
+            var store = new JsonSettingsStore(path);
+            store.Save(new ApplicationSettings(
+                SelectedDeviceIds: new[] { "device-a", "", "device-a", " " }));
+
+            Assert.Equal(new[] { "device-a" }, store.Load().SelectedDeviceIds);
+        }
+        finally
+        {
+            Delete(path);
+        }
+    }
+
+    [Fact]
     public void MalformedFileThrowsForDiagnosticHandling()
     {
         var path = TemporaryPath();

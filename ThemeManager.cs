@@ -10,10 +10,9 @@ public enum ThemePalette
 
 public sealed class ThemeManager : IDisposable
 {
-    private readonly ISettingsStore settingsStore;
+    private readonly ApplicationSettingsCoordinator settingsCoordinator;
     private readonly IOperatingSystemThemeProvider operatingSystemTheme;
     private readonly Action<ThemePalette> applyPalette;
-    private readonly Action<string>? report;
     private ApplicationSettings settings = new();
     private bool disposed;
 
@@ -22,11 +21,21 @@ public sealed class ThemeManager : IDisposable
         IOperatingSystemThemeProvider operatingSystemTheme,
         Action<ThemePalette> applyPalette,
         Action<string>? report = null)
+        : this(
+            new ApplicationSettingsCoordinator(settingsStore, report),
+            operatingSystemTheme,
+            applyPalette)
     {
-        this.settingsStore = settingsStore;
+    }
+
+    public ThemeManager(
+        ApplicationSettingsCoordinator settingsCoordinator,
+        IOperatingSystemThemeProvider operatingSystemTheme,
+        Action<ThemePalette> applyPalette)
+    {
+        this.settingsCoordinator = settingsCoordinator;
         this.operatingSystemTheme = operatingSystemTheme;
         this.applyPalette = applyPalette;
-        this.report = report;
         operatingSystemTheme.ThemeChanged += OnOperatingSystemThemeChanged;
     }
 
@@ -42,34 +51,20 @@ public sealed class ThemeManager : IDisposable
     {
         try
         {
-            var loadedSettings = settingsStore.Load();
-            settings = loadedSettings with
-            {
-                AppearanceMode = loadedSettings.AppearanceMode.Normalize()
-            };
+            settingsCoordinator.Load();
+            var loadedSettings = settingsCoordinator.Settings;
+            settings = loadedSettings with { AppearanceMode = loadedSettings.AppearanceMode.Normalize() };
             CurrentMode = settings.AppearanceMode;
             MinimizeToTray = settings.MinimizeToTray;
         }
-        catch (IOException exception)
+        catch (Exception exception) when (
+            exception is IOException ||
+            exception is UnauthorizedAccessException ||
+            exception is System.Text.Json.JsonException)
         {
             settings = new ApplicationSettings();
             CurrentMode = AppearanceMode.OsDefault;
             MinimizeToTray = false;
-            report?.Invoke($"Appearance settings could not be loaded: {exception.Message}");
-        }
-        catch (UnauthorizedAccessException exception)
-        {
-            settings = new ApplicationSettings();
-            CurrentMode = AppearanceMode.OsDefault;
-            MinimizeToTray = false;
-            report?.Invoke($"Appearance settings could not be loaded: {exception.Message}");
-        }
-        catch (System.Text.Json.JsonException exception)
-        {
-            settings = new ApplicationSettings();
-            CurrentMode = AppearanceMode.OsDefault;
-            MinimizeToTray = false;
-            report?.Invoke($"Appearance settings could not be loaded: {exception.Message}");
         }
 
         ApplyCurrentPalette();
@@ -78,33 +73,21 @@ public sealed class ThemeManager : IDisposable
     public void Select(AppearanceMode mode)
     {
         CurrentMode = mode.Normalize();
-        settings = settings with { AppearanceMode = CurrentMode };
-        SaveSettings(settings, "Appearance");
+        settingsCoordinator.Update(
+            current => current with { AppearanceMode = CurrentMode },
+            "Appearance");
+        settings = settingsCoordinator.Settings;
         ApplyCurrentPalette();
     }
 
     public void SelectMinimizeToTray(bool enabled)
     {
         MinimizeToTray = enabled;
-        settings = settings with { MinimizeToTray = enabled };
-        SaveSettings(settings, "Minimize-to-tray");
+        settingsCoordinator.Update(
+            current => current with { MinimizeToTray = enabled },
+            "Minimize-to-tray");
+        settings = settingsCoordinator.Settings;
         Changed?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void SaveSettings(ApplicationSettings value, string settingName)
-    {
-        try
-        {
-            settingsStore.Save(value);
-        }
-        catch (IOException exception)
-        {
-            report?.Invoke($"{settingName} settings could not be saved: {exception.Message}");
-        }
-        catch (UnauthorizedAccessException exception)
-        {
-            report?.Invoke($"{settingName} settings could not be saved: {exception.Message}");
-        }
     }
 
     public void Dispose()
