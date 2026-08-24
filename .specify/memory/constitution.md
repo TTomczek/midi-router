@@ -1,13 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: unratified scaffold -> 1.0.0
-- Modified principles: placeholder principles -> Modular Architecture; Background-Process
-  Reliability; Test-Driven Development; Hardware-Isolated Integration Testing; Simplicity
-  and Extensibility
-- Added sections: Platform and Runtime Constraints; Development Workflow and Quality Gates
+- Version change: 1.0.0 -> 2.0.0
+- Modified principles: Platform and Runtime Constraints (the mandated runtime changed
+  from .NET 8 to .NET 10)
+- Added sections: none
 - Removed sections: none
 - Follow-up TODOs: RATIFICATION_DATE remains TODO because the original adoption date is
-  not documented in the repository.
+  not documented in the repository. Planning artifacts still require synchronization.
 -->
 
 # MIDI Router Constitution
@@ -56,7 +55,7 @@ add.
 
 ## Platform and Runtime Constraints
 
-MIDI Router MUST target Windows and .NET 8 as documented project requirements. Windows
+MIDI Router MUST target Windows and .NET 10 as documented project requirements. Windows
 MIDI Services is the authoritative runtime integration for MIDI device discovery and
 endpoints. Platform-specific code MUST be isolated behind testable boundaries, and the
 application MUST handle unavailable runtime services or empty device lists with an
@@ -91,4 +90,4 @@ maintainer MAY require additional tests or review for changes affecting hardware
 asynchronous processing, or public interfaces. Any unresolved exception MUST be recorded
 with an owner and a plan to remove it.
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date is not documented | **Last Amended**: 2026-08-23
+**Version**: 2.0.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date is not documented | **Last Amended**: 2026-08-23

@@ -58,3 +58,5 @@ nunit-*.xml
 
 .vs
 .idea
+Generated/
+*.rsp

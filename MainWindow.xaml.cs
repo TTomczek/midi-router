@@ -1,79 +1,56 @@
-﻿using System.Windows;
+using System.Windows;
 using Forms = System.Windows.Forms;
 
-namespace midi_router
+namespace midi_router;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    private readonly MidiInputDeviceViewModel viewModel;
+    private readonly Forms.NotifyIcon trayIcon;
+    private readonly Forms.ContextMenuStrip trayMenu;
+
+    public MainWindow()
     {
-        private readonly MidiInputDeviceViewModel viewModel;
-        private readonly Forms.NotifyIcon trayIcon;
-        private readonly Forms.ContextMenuStrip trayMenu;
-
-        public MainWindow()
+        InitializeComponent();
+        trayMenu = new Forms.ContextMenuStrip();
+        trayMenu.Items.Add("Show", null, (_, _) => RestoreFromTray());
+        trayMenu.Items.Add(new Forms.ToolStripSeparator());
+        trayMenu.Items.Add("Exit", null, (_, _) => Close());
+        trayIcon = new Forms.NotifyIcon
         {
-            InitializeComponent();
-            trayMenu = new Forms.ContextMenuStrip();
-            trayMenu.Items.Add("Anzeigen", null, (_, _) => RestoreFromTray());
-            trayMenu.Items.Add(new Forms.ToolStripSeparator());
-            trayMenu.Items.Add("Beenden", null, (_, _) => Close());
+            Icon = System.Drawing.SystemIcons.Application,
+            Text = "MIDI Router",
+            ContextMenuStrip = trayMenu,
+            Visible = true
+        };
+        trayIcon.DoubleClick += (_, _) => RestoreFromTray();
+        viewModel = new MidiInputDeviceViewModel(new WindowsMidiInputDeviceProvider());
+        DataContext = viewModel;
+        Loaded += async (_, _) => await viewModel.RefreshAsync();
+    }
 
-            trayIcon = new Forms.NotifyIcon
-            {
-                Icon = System.Drawing.SystemIcons.Application,
-                Text = "MIDI Router",
-                ContextMenuStrip = trayMenu,
-                Visible = true
-            };
-            trayIcon.DoubleClick += (_, _) => RestoreFromTray();
-
-            viewModel = new MidiInputDeviceViewModel(
-                new WindowsMidiInputDeviceProvider(),
-                new WindowsMidiRoutingService());
-            DataContext = viewModel;
-            Loaded += async (_, _) => await viewModel.RefreshAsync();
-        }
-
-        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+    protected override void OnStateChanged(EventArgs e)
+    {
+        base.OnStateChanged(e);
+        if (WindowState == WindowState.Minimized)
         {
-            await viewModel.RefreshAsync();
+            Hide();
         }
+    }
 
-        private void ChannelComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (sender is not System.Windows.Controls.ComboBox comboBox
-                || comboBox.DataContext is not MidiInputDevice device
-                || comboBox.SelectedItem is not int channel)
-            {
-                return;
-            }
+    private void RestoreFromTray()
+    {
+        Show();
+        WindowState = WindowState.Normal;
+        Activate();
+    }
 
-            viewModel.SetTargetChannel(device, channel);
-        }
-
-        protected override void OnStateChanged(EventArgs e)
-        {
-            base.OnStateChanged(e);
-
-            if (WindowState == WindowState.Minimized)
-            {
-                Hide();
-            }
-        }
-
-        private void RestoreFromTray()
-        {
-            Show();
-            WindowState = WindowState.Normal;
-            Activate();
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            viewModel.Dispose();
-            trayIcon.Visible = false;
-            trayIcon.Dispose();
-            trayMenu.Dispose();
-            base.OnClosed(e);
-        }
+    protected override void OnClosed(EventArgs e)
+    {
+        viewModel.Dispose();
+        trayIcon.Visible = false;
+        trayIcon.Dispose();
+        trayMenu.Dispose();
+        base.OnClosed(e);
     }
 }
