@@ -1,16 +1,16 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF4F7FB"/>
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF4F4F4"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFFFF"/>
-    <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#FFF8FAFC"/>
-    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#FF17202A"/>
-    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#FF52606D"/>
-    <SolidColorBrush x:Key="MutedTextBrush" Color="#FF82909E"/>
-    <SolidColorBrush x:Key="BorderBrush" Color="#FFE1E7EF"/>
-    <SolidColorBrush x:Key="AccentBrush" Color="#FF2563EB"/>
+    <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#FFF7F7F7"/>
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="#FF222222"/>
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#FF666666"/>
+    <SolidColorBrush x:Key="MutedTextBrush" Color="#FF888888"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#FFD8D8D8"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF333333"/>
     <SolidColorBrush x:Key="AccentTextBrush" Color="#FFFFFFFF"/>
-    <SolidColorBrush x:Key="HoverBrush" Color="#FFF0F4F8"/>
-    <SolidColorBrush x:Key="SelectedBrush" Color="#FFDBEAFE"/>
+    <SolidColorBrush x:Key="HoverBrush" Color="#FFF0F0F0"/>
+    <SolidColorBrush x:Key="SelectedBrush" Color="#FFE5E5E5"/>
     <Style TargetType="Window">
         <Setter Property="Background" Value="{DynamicResource WindowBackgroundBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
