@@ -54,6 +54,22 @@ public sealed class MidiInputDeviceViewModelTests
     }
 
     [Fact]
+    public async Task SelectedDevicesReceiveAscendingAutomaticChannels()
+    {
+        using var provider = new FakeProvider(
+            new MidiInputDevice("id-a", "A", MidiVersion.Midi1),
+            new MidiInputDevice("id-b", "B", MidiVersion.Midi1));
+        using var viewModel = new MidiInputDeviceViewModel(provider);
+
+        await viewModel.RefreshAsync();
+        viewModel.ToggleSelection("id-a");
+        viewModel.ToggleSelection("id-b");
+
+        Assert.Equal(1, viewModel.Devices.Single(row => row.EndpointDeviceId == "id-a").DisplayChannel);
+        Assert.Equal(2, viewModel.Devices.Single(row => row.EndpointDeviceId == "id-b").DisplayChannel);
+    }
+
+    [Fact]
     public async Task ReconnectRestoresSelectedDeviceById()
     {
         using var provider = new FakeProvider(

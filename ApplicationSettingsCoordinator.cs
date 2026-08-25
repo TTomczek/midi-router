@@ -63,6 +63,14 @@ public sealed class ApplicationSettingsCoordinator
             SelectedDeviceIds = (settings.SelectedDeviceIds ?? Array.Empty<string>())
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
-                .ToArray()
+                .ToArray(),
+            DeviceChannelAssignments = (settings.DeviceChannelAssignments ??
+                new Dictionary<string, int>())
+                .Where(pair =>
+                    !string.IsNullOrWhiteSpace(pair.Key) &&
+                    pair.Value is >= MidiChannelAllocator.FirstChannel and <= MidiChannelAllocator.LastChannel)
+                .GroupBy(pair => pair.Key, StringComparer.Ordinal)
+                .Select(group => group.First())
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal)
         };
 }

@@ -70,6 +70,48 @@
                         <GridView>
                             <GridViewColumn Header="DEVICE" DisplayMemberBinding="{Binding Name}" Width="420"/>
                             <GridViewColumn Header="PROTOCOL" DisplayMemberBinding="{Binding Version}" Width="180"/>
+                            <GridViewColumn Header="CHANNEL" Width="90">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedValue="{Binding DisplayChannel, Mode=OneWay}"
+                                                  ItemsSource="{Binding DataContext.ChannelOptions,
+                                                      RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                  Foreground="{DynamicResource PrimaryTextBrush}"
+                                                  Background="{DynamicResource ElevatedSurfaceBrush}"
+                                                  BorderBrush="{DynamicResource BorderBrush}"
+                                                  SelectionChanged="ChannelComboBox_SelectionChanged"
+                                                  AutomationProperties.Name="MIDI channel"
+                                                  AutomationProperties.HelpText="Select the MIDI channel assigned to this device"
+                                                  Width="64">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock x:Name="ChannelText"
+                                                               Text="{Binding}"
+                                                               Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                                    <DataTemplate.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}},
+                                                                Path=IsHighlighted}"
+                                                            Value="True">
+                                                            <Setter TargetName="ChannelText"
+                                                                    Property="Foreground"
+                                                                    Value="{DynamicResource AccentTextBrush}"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger
+                                                            Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}},
+                                                                Path=IsSelected}"
+                                                            Value="True">
+                                                            <Setter TargetName="ChannelText"
+                                                                    Property="Foreground"
+                                                                    Value="{DynamicResource AccentTextBrush}"/>
+                                                        </DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                         </GridView>
                     </ListView.View>
                 </ListView>

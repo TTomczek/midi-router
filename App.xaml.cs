@@ -16,6 +16,7 @@ namespace midi_router
             var settingsCoordinator = new ApplicationSettingsCoordinator(
                 new JsonSettingsStore(),
                 message => System.Diagnostics.Debug.WriteLine(message));
+            settingsCoordinator.Load();
             themeManager = new ThemeManager(
                 settingsCoordinator,
                 new WindowsOperatingSystemThemeProvider(),

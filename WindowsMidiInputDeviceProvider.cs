@@ -34,6 +34,14 @@ public sealed class WindowsMidiInputDeviceProvider : IMidiInputDeviceProvider
             var devices = new Dictionary<string, MidiInputDevice>();
             foreach (var pair in currentWatcher.EnumeratedEndpointDevices)
             {
+                if (string.Equals(
+                        pair.Value.Name,
+                        MidiRoutingConstants.VirtualDeviceName,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 try
                 {
                     var transport = pair.Value.GetTransportSuppliedInfo();

@@ -11,6 +11,8 @@ public partial class MainWindow : Window
     private readonly Forms.NotifyIcon trayIcon;
     private readonly Forms.ContextMenuStrip trayMenu;
     private readonly ThemeSettingsViewModel themeSettings;
+    private MidiRouterDeviceCoordinator? routerCoordinator;
+    private bool routingInitializationStarted;
 
     public MainWindow(
         ThemeSettingsViewModel themeSettings,
@@ -35,7 +37,52 @@ public partial class MainWindow : Window
             new WindowsMidiInputDeviceProvider(),
             settingsCoordinator);
         DeviceList.DataContext = viewModel;
-        Loaded += async (_, _) => await viewModel.RefreshAsync();
+        ContentRendered += MainWindow_ContentRendered;
+    }
+
+    private async void MainWindow_ContentRendered(object? sender, EventArgs e)
+    {
+        ContentRendered -= MainWindow_ContentRendered;
+        await Task.Run(() => viewModel.RefreshAsync());
+        await Task.Run(InitializeRouting);
+    }
+
+    private void InitializeRouting()
+    {
+        if (routingInitializationStarted)
+        {
+            return;
+        }
+
+        routingInitializationStarted = true;
+        if (!Windows.Devices.Midi2.MidiApi.EnsureServiceAvailable())
+        {
+            viewModel.StatusMessageFromRouter("Windows MIDI Services is unavailable.");
+            return;
+        }
+
+        WindowsMidiRoutingEndpointProvider? routingProvider = null;
+        MidiRouter? router = null;
+        try
+        {
+            routingProvider = new WindowsMidiRoutingEndpointProvider();
+            router = new MidiRouter(routingProvider);
+            router.Diagnostic += (_, message) => viewModel.StatusMessageFromRouter(message);
+            routerCoordinator = new MidiRouterDeviceCoordinator(viewModel, router);
+        }
+        catch (InvalidOperationException exception)
+        {
+            router?.Dispose();
+            routingProvider?.Dispose();
+            viewModel.StatusMessageFromRouter(exception.Message);
+        }
+        catch (System.Runtime.InteropServices.COMException exception)
+        {
+            router?.Dispose();
+            routingProvider?.Dispose();
+            viewModel.StatusMessageFromRouter(
+                $"MIDI routing could not be started: {exception.Message}");
+        }
     }
 
     protected override void OnStateChanged(EventArgs e)
@@ -90,19 +137,51 @@ public partial class MainWindow : Window
     }
 
     private void DeviceList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.OriginalSource is not DependencyObject source ||
+            FindVisualParent<Controls.ComboBox>(source) is not null ||
+            Controls.ItemsControl.ContainerFromElement(DeviceList, source) is not Controls.ListViewItem item ||
+            item.DataContext is not MidiInputDeviceRow row)
         {
-            if (e.OriginalSource is DependencyObject source &&
-                Controls.ItemsControl.ContainerFromElement(DeviceList, source) is Controls.ListViewItem item &&
-                item.DataContext is MidiInputDeviceRow row)
+            return;
+        }
+
+        viewModel.ToggleSelection(row.EndpointDeviceId);
+        e.Handled = true;
+    }
+
+    private static T? FindVisualParent<T>(DependencyObject source)
+        where T : DependencyObject
+    {
+        for (var current = source; current is not null; current = System.Windows.Media.VisualTreeHelper.GetParent(current))
+        {
+            if (current is T match)
             {
-                viewModel.ToggleSelection(row.EndpointDeviceId);
-                e.Handled = true;
+                return match;
             }
         }
 
+        return null;
+    }
+
+    private void ChannelComboBox_SelectionChanged(object sender, Controls.SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count == 0 ||
+            sender is not Controls.ComboBox comboBox ||
+            comboBox.DataContext is not MidiInputDeviceRow row ||
+            e.AddedItems[0] is not int displayChannel)
+        {
+            return;
+        }
+
+        viewModel.SetChannel(row.EndpointDeviceId, displayChannel);
+    }
+
     protected override void OnClosed(EventArgs e)
     {
+        ContentRendered -= MainWindow_ContentRendered;
         viewModel.Dispose();
+        routerCoordinator?.Dispose();
         trayIcon.MouseClick -= TrayIcon_MouseClick;
         trayIcon.Visible = false;
         trayIcon.Dispose();

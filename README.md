@@ -30,17 +30,18 @@ werden. Ein erneuter Klick hebt die Auswahl auf; ausgewählte Zeilen werden
 hervorgehoben. Die Auswahl wird anhand der eindeutigen Geräte-ID gespeichert und
 nach einem Neustart sowie beim Wiederverbinden desselben Geräts wiederhergestellt.
 
-Für jedes gefundene Eingabegerät erstellt die Anwendung einen virtuellen MIDI-
-Ausgang mit dem Namen `MIDI Router - <Gerätename>`. Eingehende MIDI-1- und
-MIDI-2-Channel-Voice-Nachrichten werden auf den pro Gerät ausgewählten
-Ausgabekanal (1-16) geändert und an diesen Ausgang weitergeleitet.
+Für ausgewählte Eingabegeräte routet die Anwendung MIDI-Nachrichten über einen
+gemeinsamen virtuellen MIDI-Endpunkt. Channel-Voice-Nachrichten werden auf den
+pro Gerät konfigurierten Ausgabekanal (1-16) geändert; der interne Wertebereich
+ist 0-15. Nachrichten vom virtuellen Endpunkt werden anhand dieses Kanals an das
+passende Gerät zurückgesendet.
 
 Die Geräte-Enumeration ist über `IMidiInputDeviceProvider` abstrahiert. Dadurch
 kann die UI-Logik ohne physische MIDI-Hardware getestet werden.
 
 Voraussetzung für die Geräteerkennung:
 
-- Windows 11 mit verfügbarer Windows MIDI Services-Laufzeit.
+- Windows 10 (Build 19041 oder neuer) mit verfügbarer Windows MIDI Services-Laufzeit.
 
 ## Entwicklung
 
