@@ -13,10 +13,10 @@ public static partial class MidiDeviceLogging
     [LoggerMessage(1002, LogLevel.Information, "MIDI endpoint enumeration completed.")]
     public static partial void EnumerationCompleted(this ILogger logger);
 
-    [LoggerMessage(1003, LogLevel.Debug, "MIDI endpoint added: {EndpointId}.")]
+    [LoggerMessage(1003, LogLevel.Information, "MIDI device connected: {EndpointId}.")]
     public static partial void EndpointAdded(this ILogger logger, string endpointId);
 
-    [LoggerMessage(1004, LogLevel.Debug, "MIDI endpoint removed: {EndpointId}.")]
+    [LoggerMessage(1004, LogLevel.Information, "MIDI device disconnected: {EndpointId}.")]
     public static partial void EndpointRemoved(this ILogger logger, string endpointId);
 
     [LoggerMessage(1005, LogLevel.Warning, "MIDI endpoint information could not be read: {EndpointId}.")]

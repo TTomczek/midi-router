@@ -1,4 +1,6 @@
+using System.IO;
 using System.Windows;
+using Microsoft.Extensions.Logging;
 
 namespace midi_router
 {
@@ -9,10 +11,18 @@ namespace midi_router
     {
         private ThemeManager? themeManager;
         private ThemeSettingsViewModel? themeSettings;
+        private ILoggerFactory? loggerFactory;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            var logDirectory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "MIDI Router",
+                "Logs");
+            loggerFactory = LoggerFactory.Create(builder =>
+                builder.AddProvider(new RotatingFileLoggerProvider(
+                    Path.Combine(logDirectory, "midi-router.log"))));
             var settingsCoordinator = new ApplicationSettingsCoordinator(
                 new JsonSettingsStore(),
                 message => System.Diagnostics.Debug.WriteLine(message));
@@ -24,7 +34,7 @@ namespace midi_router
             themeManager.Load();
             themeSettings = new ThemeSettingsViewModel(themeManager);
 
-            var window = new MainWindow(themeSettings, settingsCoordinator);
+            var window = new MainWindow(themeSettings, settingsCoordinator, loggerFactory);
             MainWindow = window;
             window.Show();
         }
@@ -33,6 +43,7 @@ namespace midi_router
         {
             themeSettings?.Dispose();
             themeManager?.Dispose();
+            loggerFactory?.Dispose();
             base.OnExit(e);
         }
 

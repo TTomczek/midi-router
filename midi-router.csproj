@@ -37,4 +37,11 @@
     <Page Remove="midi-router.Tests\**\*.xaml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="MidiMessageMonitor\**\*.cs" />
+    <EmbeddedResource Remove="MidiMessageMonitor\**\*" />
+    <None Remove="MidiMessageMonitor\**\*" />
+    <Page Remove="MidiMessageMonitor\**\*.xaml" />
+  </ItemGroup>
+
 </Project>

@@ -39,6 +39,13 @@ passende Gerät zurückgesendet.
 Die Geräte-Enumeration ist über `IMidiInputDeviceProvider` abstrahiert. Dadurch
 kann die UI-Logik ohne physische MIDI-Hardware getestet werden.
 
+## Protokollierung
+
+Die Anwendung schreibt Aktionen und MIDI-Geräteereignisse dauerhaft nach
+`%LOCALAPPDATA%\MIDI Router\Logs\midi-router.log`. Bei einer Dateigröße von
+5 MB wird rotiert; die fünf vorherigen Dateien bleiben als `.1` bis `.5`
+erhalten.
+
 Voraussetzung für die Geräteerkennung:
 
 - Windows 10 (Build 19041 oder neuer) mit verfügbarer Windows MIDI Services-Laufzeit.

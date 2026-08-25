@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
 using Forms = System.Windows.Forms;
 using Controls = System.Windows.Controls;
 
@@ -16,7 +17,8 @@ public partial class MainWindow : Window
 
     public MainWindow(
         ThemeSettingsViewModel themeSettings,
-        ApplicationSettingsCoordinator? settingsCoordinator = null)
+        ApplicationSettingsCoordinator? settingsCoordinator = null,
+        ILoggerFactory? loggerFactory = null)
     {
         InitializeComponent();
         this.themeSettings = themeSettings;
@@ -34,8 +36,10 @@ public partial class MainWindow : Window
         };
         trayIcon.MouseClick += TrayIcon_MouseClick;
         viewModel = new MidiInputDeviceViewModel(
-            new WindowsMidiInputDeviceProvider(),
-            settingsCoordinator);
+            new WindowsMidiInputDeviceProvider(
+                loggerFactory?.CreateLogger<WindowsMidiInputDeviceProvider>()),
+            settingsCoordinator,
+            loggerFactory);
         DeviceList.DataContext = viewModel;
         ContentRendered += MainWindow_ContentRendered;
     }

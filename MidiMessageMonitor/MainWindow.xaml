@@ -1,0 +1,34 @@
+<Window x:Class="MidiMessageMonitor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Midi Router Monitor" Width="800" Height="520"
+        MinWidth="560" MinHeight="320" WindowStartupLocation="CenterScreen">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Margin="0,0,0,16">
+            <Button DockPanel.Dock="Right" Content="Clear" Padding="14,6"
+                    Click="ClearButton_Click"/>
+            <StackPanel>
+                <TextBlock Text="Midi Router" FontSize="22" FontWeight="SemiBold"/>
+                <TextBlock x:Name="StatusText" Text="Connecting..."
+                           Margin="0,4,0,0" Foreground="Gray"/>
+            </StackPanel>
+        </DockPanel>
+        <ListView x:Name="Messages" Grid.Row="1">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="TIME" DisplayMemberBinding="{Binding Time}" Width="105"/>
+                    <GridViewColumn Header="CHANNEL" DisplayMemberBinding="{Binding Channel}" Width="80"/>
+                    <GridViewColumn Header="MESSAGE (UMP WORDS)"
+                                    DisplayMemberBinding="{Binding Data}" Width="520"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <TextBlock Grid.Row="2" Text="{Binding ElementName=Messages, Path=Items.Count, StringFormat={}{0} messages}"
+                   Margin="2,12,0,0" Foreground="Gray"/>
+    </Grid>
+</Window>

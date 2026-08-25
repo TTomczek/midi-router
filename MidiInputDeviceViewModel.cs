@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 using WpfApplication = System.Windows.Application;
 
 namespace midi_router;
@@ -9,6 +10,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
 {
     private readonly MidiDeviceMonitor monitor;
     private readonly ApplicationSettingsCoordinator? settings;
+    private readonly ILogger<MidiInputDeviceViewModel> logger;
     private readonly ObservableCollection<MidiInputDeviceRow> rows = new();
     private readonly HashSet<string> selectedDeviceIds;
     private readonly Dictionary<string, int> channelAssignments;
@@ -18,9 +20,13 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
 
     public MidiInputDeviceViewModel(
         IMidiInputDeviceProvider provider,
-        ApplicationSettingsCoordinator? settings = null)
+        ApplicationSettingsCoordinator? settings = null,
+        ILoggerFactory? loggerFactory = null)
     {
         this.settings = settings;
+        this.logger = loggerFactory?.CreateLogger<MidiInputDeviceViewModel>() ?? LoggerFactory
+            .Create(builder => builder.AddDebug())
+            .CreateLogger<MidiInputDeviceViewModel>();
         selectedDeviceIds = new HashSet<string>(
             settings?.Settings.SelectedDeviceIds ?? Array.Empty<string>(),
             StringComparer.Ordinal);
@@ -28,7 +34,9 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
             new Dictionary<string, int>())
             .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
         Devices = new ReadOnlyObservableCollection<MidiInputDeviceRow>(rows);
-        monitor = new MidiDeviceMonitor(provider);
+        monitor = new MidiDeviceMonitor(
+            provider,
+            loggerFactory?.CreateLogger<MidiDeviceMonitor>());
         monitor.SnapshotAvailable += OnSnapshotAvailable;
     }
 
@@ -62,6 +70,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         {
             selectedDeviceIds.Remove(endpointDeviceId);
         }
+        logger.DeviceSelectionChanged(endpointDeviceId, selectedDeviceIds.Contains(endpointDeviceId));
 
         foreach (var row in rows.Where(row => row.EndpointDeviceId == endpointDeviceId))
         {
@@ -131,6 +140,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         }
 
         channelAssignments[endpointDeviceId] = internalChannel;
+        logger.ChannelSelectionChanged(endpointDeviceId, displayChannel);
         foreach (var row in rows.Where(row => row.EndpointDeviceId == endpointDeviceId))
         {
             row.SetChannel(internalChannel);
