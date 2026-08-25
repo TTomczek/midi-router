@@ -54,6 +54,49 @@ public sealed class MidiInputDeviceViewModelTests
     }
 
     [Fact]
+    public async Task RowActivityExpiresAndRepeatedMessagesRefreshIt()
+    {
+        var row = new MidiInputDeviceRow(
+            new MidiInputDevice("id-a", "Keyboard", MidiVersion.Midi1),
+            false);
+        var changed = new List<string?>();
+        row.PropertyChanged += (_, args) => changed.Add(args.PropertyName);
+
+        row.MarkActivity(TimeSpan.FromMilliseconds(100));
+        await Task.Delay(70);
+        row.MarkActivity(TimeSpan.FromMilliseconds(100));
+        Assert.True(row.IsActive);
+        await Task.Delay(60);
+        Assert.True(row.IsActive);
+        await Task.Delay(70);
+
+        Assert.False(row.IsActive);
+        Assert.Contains(nameof(MidiInputDeviceRow.IsActive), changed);
+    }
+
+    [Fact]
+    public async Task DeviceActivityIsIndependentByEndpointId()
+    {
+        var first = new MidiInputDeviceRow(
+            new MidiInputDevice("id-a", "Controller", MidiVersion.Midi1),
+            false);
+        var second = new MidiInputDeviceRow(
+            new MidiInputDevice("id-b", "Controller", MidiVersion.Midi2),
+            false);
+
+        first.MarkActivity(TimeSpan.FromMilliseconds(100));
+
+        Assert.True(first.IsActive);
+        Assert.False(second.IsActive);
+
+        first.Dispose();
+        second.Dispose();
+        await Task.Delay(120);
+        Assert.False(first.IsActive);
+        Assert.False(second.IsActive);
+    }
+
+    [Fact]
     public async Task SelectedDevicesReceiveAscendingAutomaticChannels()
     {
         using var provider = new FakeProvider(

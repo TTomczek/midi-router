@@ -9,6 +9,7 @@ namespace MidiMessageMonitor;
 public partial class MainWindow : Window
 {
     private const int MaximumMessages = 500;
+    private const string SessionName = "Midi Router Message Monitor";
     private readonly ObservableCollection<DisplayedMessage> messages = new();
     private readonly Dictionary<string, IMidiRoutingEndpoint> endpoints = new(StringComparer.Ordinal);
     private WindowsMidiRoutingEndpointProvider? endpointProvider;
@@ -22,18 +23,20 @@ public partial class MainWindow : Window
         ContentRendered += StartListening;
     }
 
-    private void StartListening(object? sender, EventArgs e)
+    private async void StartListening(object? sender, EventArgs e)
     {
         ContentRendered -= StartListening;
         try
         {
-            if (!MidiApi.EnsureServiceAvailable())
+            var provider = await Task.Run(
+                () => new WindowsMidiRoutingEndpointProvider(SessionName));
+            if (Volatile.Read(ref disposed) != 0)
             {
-                StatusText.Text = "Windows MIDI Services is unavailable.";
+                provider.Dispose();
                 return;
             }
 
-            endpointProvider = new WindowsMidiRoutingEndpointProvider();
+            endpointProvider = provider;
             watcher = MidiEndpointDeviceWatcher.Create(
                 MidiEndpointDeviceInformationFilters.AllStandardEndpoints |
                 MidiEndpointDeviceInformationFilters.VirtualDeviceResponder);

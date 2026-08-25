@@ -1,9 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace midi_router;
 
 public sealed class MidiRouter : IDisposable
 {
     private readonly IMidiRoutingEndpointProvider endpoints;
     private readonly IMidiMessageTransformation transformation;
+    private readonly ILogger<MidiRouter> logger;
     private readonly MidiChannelAllocator allocator = new();
     private readonly Dictionary<string, IMidiRoutingEndpoint> physical = new(StringComparer.Ordinal);
     private readonly Dictionary<int, string> byChannel = new();
@@ -13,13 +16,18 @@ public sealed class MidiRouter : IDisposable
 
     public MidiRouter(
         IMidiRoutingEndpointProvider endpoints,
-        IMidiMessageTransformation? transformation = null)
+        IMidiMessageTransformation? transformation = null,
+        ILogger<MidiRouter>? logger = null)
     {
         this.endpoints = endpoints;
         this.transformation = transformation ?? new MidiChannelTransformation();
+        this.logger = logger ?? LoggerFactory
+            .Create(builder => builder.AddDebug())
+            .CreateLogger<MidiRouter>();
     }
 
     public event EventHandler<string>? Diagnostic;
+    public event EventHandler<string>? ActivityDetected;
     public IReadOnlyDictionary<string, int> Assignments => allocator.Assignments;
     public IReadOnlyCollection<string> ActiveDeviceIds => physical.Keys;
 
@@ -115,6 +123,8 @@ public sealed class MidiRouter : IDisposable
             return;
         }
 
+        LogMessage("physical", deviceId, message);
+        ActivityDetected?.Invoke(this, deviceId);
         var transformed = transformation.Forward(message with { SourceDeviceId = deviceId }, channel);
         if (message.Channel is int originalChannel)
         {
@@ -129,6 +139,7 @@ public sealed class MidiRouter : IDisposable
 
     private void OnVirtualMessageReceived(object? sender, MidiRoutingMessage message)
     {
+        LogMessage("virtual", message.SourceDeviceId ?? "virtual-endpoint", message);
         var channel = message.Channel;
         if (!channel.HasValue || !byChannel.TryGetValue(channel.Value, out var deviceId) ||
             !physical.TryGetValue(deviceId, out var endpoint))
@@ -144,6 +155,17 @@ public sealed class MidiRouter : IDisposable
         if (!endpoint.Send(transformation.Reverse(message, originalChannel)))
         {
             Diagnostic?.Invoke(this, $"Could not send MIDI message to {deviceId}.");
+        }
+    }
+
+    private void LogMessage(string direction, string endpointId, MidiRoutingMessage message)
+    {
+        if (logger.IsEnabled(LogLevel.Trace))
+        {
+            logger.MidiMessageReceived(
+                endpointId,
+                direction,
+                string.Join(" ", message.Words.Select(word => word.ToString("X8"))));
         }
     }
 

@@ -17,6 +17,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
     private int disposed;
     private DeviceOverviewState state = DeviceOverviewState.Loading;
     private string? statusMessage;
+    private static readonly TimeSpan ActivityDuration = TimeSpan.FromMilliseconds(750);
 
     public MidiInputDeviceViewModel(
         IMidiInputDeviceProvider provider,
@@ -93,6 +94,10 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
     {
         void Apply()
         {
+            foreach (var row in rows)
+            {
+                row.Dispose();
+            }
             rows.Clear();
             foreach (var device in snapshot.Devices)
             {
@@ -172,6 +177,23 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         StatusMessage = message;
     }
 
+    internal void MarkActivity(string endpointDeviceId)
+    {
+        void Apply()
+        {
+            rows.FirstOrDefault(row => row.EndpointDeviceId == endpointDeviceId)
+                ?.MarkActivity(ActivityDuration);
+        }
+
+        if (WpfApplication.Current?.Dispatcher.CheckAccess() == false)
+        {
+            WpfApplication.Current.Dispatcher.BeginInvoke(Apply);
+            return;
+        }
+
+        Apply();
+    }
+
     private void AssignMissingChannel(string endpointDeviceId)
     {
         if (channelAssignments.ContainsKey(endpointDeviceId))
@@ -228,6 +250,10 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         }
 
         monitor.SnapshotAvailable -= OnSnapshotAvailable;
+        foreach (var row in rows)
+        {
+            row.Dispose();
+        }
         monitor.Dispose();
     }
 }

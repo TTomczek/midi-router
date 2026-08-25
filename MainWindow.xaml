@@ -58,64 +58,130 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <DockPanel Margin="18,14,18,6" LastChildFill="False">
-                    <TextBlock Text="AVAILABLE INPUTS" FontSize="11" FontWeight="SemiBold"
+                <Grid Margin="18,14,18,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="AVAILABLE INPUTS" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource MutedTextBrush}"/>
+                        <TextBlock Text="Auto-refresh enabled" Margin="0,3,0,0"
+                                   Foreground="{DynamicResource MutedTextBrush}" FontSize="12"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="PROTOCOL" FontSize="11" FontWeight="SemiBold"
                                Foreground="{DynamicResource MutedTextBrush}"/>
-                    <TextBlock DockPanel.Dock="Right" Text="Auto-refresh enabled"
-                               Foreground="{DynamicResource MutedTextBrush}" FontSize="12"
-                               VerticalAlignment="Center"/>
-                </DockPanel>
+                    <TextBlock Grid.Column="2" Text="CHANNEL" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{DynamicResource MutedTextBrush}"/>
+                </Grid>
                 <ListView x:Name="DeviceList" Grid.Row="1" ItemsSource="{Binding Devices}"
                           Foreground="{DynamicResource PrimaryTextBrush}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          HorizontalContentAlignment="Stretch"
                           PreviewMouseLeftButtonDown="DeviceList_PreviewMouseLeftButtonDown">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="DEVICE" DisplayMemberBinding="{Binding Name}" Width="500"/>
-                            <GridViewColumn Header="PROTOCOL" DisplayMemberBinding="{Binding Version}" Width="170"/>
-                            <GridViewColumn Header="CHANNEL" Width="100">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox SelectedValue="{Binding DisplayChannel, Mode=OneWay}"
-                                                  ItemsSource="{Binding DataContext.ChannelOptions,
-                                                      RelativeSource={RelativeSource AncestorType=ListView}}"
-                                                  Foreground="{DynamicResource PrimaryTextBrush}"
-                                                  Background="{DynamicResource ElevatedSurfaceBrush}"
-                                                  BorderBrush="{DynamicResource BorderBrush}"
-                                                  SelectionChanged="ChannelComboBox_SelectionChanged"
-                                                  AutomationProperties.Name="MIDI channel"
-                                                  AutomationProperties.HelpText="Select the MIDI channel assigned to this device"
-                                                  Width="64">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock x:Name="ChannelText"
-                                                               Text="{Binding}"
-                                                               Foreground="{DynamicResource PrimaryTextBrush}"/>
-                                                    <DataTemplate.Triggers>
-                                                        <DataTrigger
-                                                            Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}},
-                                                                Path=IsHighlighted}"
-                                                            Value="True">
-                                                            <Setter TargetName="ChannelText"
-                                                                    Property="Foreground"
-                                                                    Value="{DynamicResource AccentTextBrush}"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger
-                                                            Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}},
-                                                                Path=IsSelected}"
-                                                            Value="True">
-                                                            <Setter TargetName="ChannelText"
-                                                                    Property="Foreground"
-                                                                    Value="{DynamicResource AccentTextBrush}"/>
-                                                        </DataTrigger>
-                                                    </DataTemplate.Triggers>
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                            <Setter Property="Padding" Value="8,10"/>
+                            <Setter Property="Margin" Value="0,2"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Border x:Name="ItemBorder" Background="Transparent" CornerRadius="7"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ItemBorder" Property="Background"
+                                                        Value="{DynamicResource HoverBrush}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="ItemBorder" Property="Background"
+                                                        Value="{DynamicResource SelectedBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="170"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Ellipse Width="7" Height="7" Margin="0,0,8,0"
+                                             VerticalAlignment="Center"
+                                             AutomationProperties.Name="MIDI activity">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill"
+                                                        Value="{DynamicResource DeviceActivityInactiveBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                        <Setter Property="Fill"
+                                                                Value="{DynamicResource DeviceActivityActiveBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Name}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Version}"
+                                           VerticalAlignment="Center"/>
+                                <ComboBox Grid.Column="2" SelectedValue="{Binding DisplayChannel, Mode=OneWay}"
+                                          ItemsSource="{Binding DataContext.ChannelOptions,
+                                              RelativeSource={RelativeSource AncestorType=ListView}}"
+                                          Foreground="{DynamicResource PrimaryTextBrush}"
+                                          Background="{DynamicResource ElevatedSurfaceBrush}"
+                                          BorderBrush="{DynamicResource BorderBrush}"
+                                          SelectionChanged="ChannelComboBox_SelectionChanged"
+                                          AutomationProperties.Name="MIDI channel"
+                                          AutomationProperties.HelpText="Select the MIDI channel assigned to this device"
+                                          Width="64">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock x:Name="ChannelText"
+                                                       Text="{Binding}"
+                                                       Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}},
+                                                        Path=IsHighlighted}"
+                                                    Value="True">
+                                                    <Setter TargetName="ChannelText"
+                                                            Property="Foreground"
+                                                            Value="{DynamicResource AccentTextBrush}"/>
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}},
+                                                        Path=IsSelected}"
+                                                    Value="True">
+                                                    <Setter TargetName="ChannelText"
+                                                            Property="Foreground"
+                                                            Value="{DynamicResource AccentTextBrush}"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
                 </ListView>
             </Grid>
         </Border>

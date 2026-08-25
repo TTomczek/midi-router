@@ -12,6 +12,7 @@ public partial class MainWindow : Window
     private readonly Forms.NotifyIcon trayIcon;
     private readonly Forms.ContextMenuStrip trayMenu;
     private readonly ThemeSettingsViewModel themeSettings;
+    private readonly ILoggerFactory? loggerFactory;
     private MidiRouterDeviceCoordinator? routerCoordinator;
     private bool routingInitializationStarted;
 
@@ -22,6 +23,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         this.themeSettings = themeSettings;
+        this.loggerFactory = loggerFactory;
         DataContext = themeSettings;
         trayMenu = new Forms.ContextMenuStrip();
         trayMenu.Items.Add("Show", null, (_, _) => RestoreFromTray());
@@ -70,7 +72,9 @@ public partial class MainWindow : Window
         try
         {
             routingProvider = new WindowsMidiRoutingEndpointProvider();
-            router = new MidiRouter(routingProvider);
+            router = new MidiRouter(
+                routingProvider,
+                logger: loggerFactory?.CreateLogger<MidiRouter>());
             router.Diagnostic += (_, message) => viewModel.StatusMessageFromRouter(message);
             routerCoordinator = new MidiRouterDeviceCoordinator(viewModel, router);
         }

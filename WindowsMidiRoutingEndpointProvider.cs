@@ -46,7 +46,7 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
             SpecificationVersionMajor = 1,
             SpecificationVersionMinor = 1,
             SupportsMidi10Protocol = true,
-            SupportsMidi20Protocol = true,
+            SupportsMidi20Protocol = false,
             SupportsReceivingJitterReductionTimestamps = false,
             SupportsSendingJitterReductionTimestamps = false,
             HasStaticFunctionBlocks = false
@@ -57,7 +57,7 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
             MidiRoutingConstants.VirtualDeviceName,
             declaredEndpointInfo)
         {
-            CreateOnlyUmpEndpoints = true
+            CreateOnlyUmpEndpoints = false
         };
 
         virtualDevice = MidiVirtualDeviceManager.CreateVirtualDevice(config);

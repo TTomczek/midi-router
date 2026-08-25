@@ -27,4 +27,11 @@ public static partial class MidiRoutingLogging
         this ILogger logger,
         string deviceId,
         int channel);
+
+    [LoggerMessage(1106, LogLevel.Trace, "MIDI message received from {EndpointId} ({Direction}): {Message}.")]
+    public static partial void MidiMessageReceived(
+        this ILogger logger,
+        string endpointId,
+        string direction,
+        string message);
 }

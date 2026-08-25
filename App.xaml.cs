@@ -21,8 +21,10 @@ namespace midi_router
                 "MIDI Router",
                 "Logs");
             loggerFactory = LoggerFactory.Create(builder =>
-                builder.AddProvider(new RotatingFileLoggerProvider(
-                    Path.Combine(logDirectory, "midi-router.log"))));
+                builder
+                    .SetMinimumLevel(LogLevel.Trace)
+                    .AddProvider(new RotatingFileLoggerProvider(
+                        Path.Combine(logDirectory, "midi-router.log"))));
             var settingsCoordinator = new ApplicationSettingsCoordinator(
                 new JsonSettingsStore(),
                 message => System.Diagnostics.Debug.WriteLine(message));

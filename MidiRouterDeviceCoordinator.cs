@@ -14,9 +14,13 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
         this.devices = devices;
         this.router = router;
         devices.RoutingStateChanged += OnRoutingStateChanged;
+        router.ActivityDetected += OnActivityDetected;
         router.Start();
         Synchronize();
     }
+
+    private void OnActivityDetected(object? sender, string endpointDeviceId)
+        => devices.MarkActivity(endpointDeviceId);
 
     private void OnRoutingStateChanged(object? sender, EventArgs args)
         => _ = SynchronizeInBackgroundAsync();
@@ -83,6 +87,7 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
         }
 
         devices.RoutingStateChanged -= OnRoutingStateChanged;
+        router.ActivityDetected -= OnActivityDetected;
         router.Dispose();
     }
 }
