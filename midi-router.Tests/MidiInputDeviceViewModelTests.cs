@@ -136,6 +136,17 @@ public sealed class MidiInputDeviceViewModelTests
         Assert.True(viewModel.Devices.Single().IsSelected);
     }
 
+    [Fact]
+    public void ActivityDurationUsesRequestedPeriod()
+    {
+        var field = typeof(MidiInputDeviceViewModel).GetField(
+            "ActivityDuration",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        var duration = Assert.IsType<TimeSpan>(field!.GetValue(null));
+
+        Assert.Equal(TimeSpan.FromMilliseconds(250), duration);
+    }
+
     private sealed class FakeProvider(params MidiInputDevice[] initial) : IMidiInputDeviceProvider
     {
         private readonly Dictionary<string, MidiInputDevice> values =
