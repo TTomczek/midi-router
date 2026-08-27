@@ -17,7 +17,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
     private int disposed;
     private DeviceOverviewState state = DeviceOverviewState.Loading;
     private string? statusMessage;
-    private static readonly TimeSpan ActivityDuration = TimeSpan.FromMilliseconds(750);
+    private static readonly TimeSpan ActivityDuration = TimeSpan.FromMilliseconds(250);
 
     public MidiInputDeviceViewModel(
         IMidiInputDeviceProvider provider,

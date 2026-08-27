@@ -74,6 +74,24 @@ public sealed class MidiDeviceMonitorTests
             snapshot.Devices.Single().EndpointDeviceId == "endpoint-a");
     }
 
+    [Fact]
+    public async Task LegacyApiModeAppendsWarningAboutHiddenMidi1Devices()
+    {
+        using var provider = new FakeProvider(Array.Empty<MidiInputDevice>())
+        {
+            ApiMode = MidiApiMode.HybridLegacy
+        };
+        using var monitor = new MidiDeviceMonitor(provider, NullLogger<MidiDeviceMonitor>.Instance);
+        DeviceOverviewSnapshot? snapshot = null;
+        monitor.SnapshotAvailable += (_, value) => snapshot = value;
+
+        await monitor.StartAsync();
+
+        Assert.NotNull(snapshot);
+        Assert.Contains("hybrid legacy", snapshot!.StatusMessage);
+        Assert.Contains("Full Windows MIDI Services mode", snapshot.StatusMessage);
+    }
+
     private sealed class FakeProvider(IEnumerable<MidiInputDevice> devices) : IMidiInputDeviceProvider
     {
         private readonly Dictionary<string, MidiInputDevice> values =
@@ -83,6 +101,7 @@ public sealed class MidiDeviceMonitorTests
         public event EventHandler<Exception>? ProviderError { add { } remove { } }
         public IReadOnlyDictionary<string, MidiInputDevice> CurrentDevices => values;
         public bool IsAvailable { get; private set; }
+        public MidiApiMode ApiMode { get; set; } = MidiApiMode.Full;
 
         public void Start() => IsAvailable = true;
         public void RaiseChanged() => DevicesChanged?.Invoke(this, EventArgs.Empty);

@@ -149,6 +149,7 @@ public sealed class MidiInputDeviceViewModelTests
         }
         public IReadOnlyDictionary<string, MidiInputDevice> CurrentDevices => values;
         public bool IsAvailable { get; private set; }
+        public MidiApiMode ApiMode { get; set; } = MidiApiMode.Full;
 
         public void Start() => IsAvailable = true;
         public void Set(MidiInputDevice? device = null)

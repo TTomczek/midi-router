@@ -62,6 +62,7 @@ public sealed class WindowsMidiInputDeviceProvider : IMidiInputDeviceProvider
     }
 
     public bool IsAvailable { get; private set; }
+    public MidiApiMode ApiMode { get; private set; }
 
     public void Start()
     {
@@ -78,6 +79,12 @@ public sealed class WindowsMidiInputDeviceProvider : IMidiInputDeviceProvider
             {
                 logger.ServiceUnavailable();
                 return;
+            }
+
+            ApiMode = ToMidiApiMode(MidiApi.GetCurrentlySelectedApiMode());
+            if (ApiMode != MidiApiMode.Full)
+            {
+                logger.ApiModeRestrictsLegacyDevices(ApiMode);
             }
 
             watcher = MidiEndpointDeviceWatcher.Create(
@@ -120,6 +127,13 @@ public sealed class WindowsMidiInputDeviceProvider : IMidiInputDeviceProvider
         logger.WatcherStopped();
         DevicesChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    private static MidiApiMode ToMidiApiMode(Windows.Devices.Midi2.MidiApiMode mode) => mode switch
+    {
+        Windows.Devices.Midi2.MidiApiMode.LegacyMode => MidiApiMode.Legacy,
+        Windows.Devices.Midi2.MidiApiMode.HybridLegacyMode => MidiApiMode.HybridLegacy,
+        _ => MidiApiMode.Full
+    };
 
     public void Dispose()
     {

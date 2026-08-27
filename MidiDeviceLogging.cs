@@ -24,4 +24,10 @@ public static partial class MidiDeviceLogging
 
     [LoggerMessage(1006, LogLevel.Information, "MIDI endpoint watcher stopped.")]
     public static partial void WatcherStopped(this ILogger logger);
+
+    [LoggerMessage(1007, LogLevel.Warning,
+        "Windows MIDI Services is running in {ApiMode} mode. Physical MIDI 1.0 devices " +
+        "attached through WinMM, the legacy usbaudio.sys driver, or vendor MIDI 1 drivers " +
+        "will not appear or send messages until Full Windows MIDI Services mode is enabled.")]
+    public static partial void ApiModeRestrictsLegacyDevices(this ILogger logger, MidiApiMode apiMode);
 }

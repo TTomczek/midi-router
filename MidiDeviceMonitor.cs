@@ -74,6 +74,17 @@ public sealed class MidiDeviceMonitor : IDisposable
                 _ => null
             };
 
+            if (state != DeviceOverviewState.Unavailable && provider.ApiMode != MidiApiMode.Full)
+            {
+                var modeName = provider.ApiMode == MidiApiMode.Legacy ? "legacy WinMM-only" : "hybrid legacy";
+                var apiModeWarning =
+                    $"Windows MIDI Services is running in {modeName} mode, so physical MIDI 1.0 " +
+                    "devices using WinMM, the legacy usbaudio.sys driver, or vendor MIDI 1 drivers " +
+                    "will not appear or send messages here. Enable Full Windows MIDI Services mode " +
+                    "in the MIDI Settings app to use them.";
+                message = message is null ? apiModeWarning : $"{message} {apiModeWarning}";
+            }
+
             Publish(new DeviceOverviewSnapshot(devices, state, message));
         }
         finally

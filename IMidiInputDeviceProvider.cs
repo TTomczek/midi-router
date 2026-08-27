@@ -6,5 +6,6 @@ public interface IMidiInputDeviceProvider : IDisposable
     event EventHandler<Exception>? ProviderError;
     IReadOnlyDictionary<string, MidiInputDevice> CurrentDevices { get; }
     bool IsAvailable { get; }
+    MidiApiMode ApiMode { get; }
     void Start();
 }
