@@ -13,6 +13,8 @@
     <CsWinRTEnabled>true</CsWinRTEnabled>
     <CsWinRTGenerateProjection>true</CsWinRTGenerateProjection>
     <CsWinRTGeneratedFilesDir>Generated</CsWinRTGeneratedFilesDir>
+
+    <ApplicationIcon>Assets\midi-router.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
