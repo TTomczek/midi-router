@@ -87,9 +87,10 @@ public partial class MainWindow : Window
         MidiEndpointDeviceWatcher sender,
         MidiEndpointDeviceInformationRemovedEventArgs args)
     {
-        if (endpoints.ContainsKey(args.EndpointDeviceId))
+        var endpointDeviceId = args.RemovedDevice.EndpointDeviceId;
+        if (endpoints.ContainsKey(endpointDeviceId))
         {
-            CloseEndpoint(args.EndpointDeviceId);
+            CloseEndpoint(endpointDeviceId);
             if (endpoints.Count == 0)
             {
                 Dispatcher.BeginInvoke(() => StatusText.Text = "Midi Router disconnected. Waiting for device...");

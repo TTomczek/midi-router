@@ -112,7 +112,7 @@ public sealed class WindowsMidiInputDeviceProvider : IMidiInputDeviceProvider
 
     private void OnRemoved(MidiEndpointDeviceWatcher sender, MidiEndpointDeviceInformationRemovedEventArgs args)
     {
-        logger.EndpointRemoved(args.EndpointDeviceId);
+        logger.EndpointRemoved(args.RemovedDevice.EndpointDeviceId);
         DevicesChanged?.Invoke(this, EventArgs.Empty);
     }
 
