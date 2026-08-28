@@ -156,7 +156,11 @@ public partial class MainWindow : Window
     }
 
     private void NewProfileMenuItem_Click(object sender, RoutedEventArgs e)
-        => profileManager.Create();
+    {
+        var name = ProfilePromptWindow.Show(this, "New profile", "New profile");
+        if (name is not null)
+            profileManager.Create(name);
+    }
 
     private void RenameProfileMenuItem_Click(object sender, RoutedEventArgs e)
     {

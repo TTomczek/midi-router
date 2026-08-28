@@ -255,7 +255,9 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         foreach (var row in rows)
         {
             row.IsSelected = selectedDeviceIds.Contains(row.EndpointDeviceId);
-            row.SetChannel(channelAssignments.GetValueOrDefault(row.EndpointDeviceId));
+            row.SetChannel(channelAssignments.TryGetValue(row.EndpointDeviceId, out var channel)
+                ? channel
+                : null);
         }
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDeviceIds)));
         RoutingStateChanged?.Invoke(this, EventArgs.Empty);
