@@ -26,8 +26,10 @@ public partial class MainWindow : Window
         this.themeSettings = themeSettings;
         this.loggerFactory = loggerFactory;
         DataContext = themeSettings;
-        profileManager = new ProfileManager(
-            new ProfileStore(), settingsCoordinator ?? new ApplicationSettingsCoordinator(new JsonSettingsStore()));
+        var applicationSettings = settingsCoordinator ?? new ApplicationSettingsCoordinator(new JsonSettingsStore());
+        if (settingsCoordinator is null)
+            applicationSettings.Load();
+        profileManager = new ProfileManager(new ProfileStore(), applicationSettings);
         trayMenu = new Forms.ContextMenuStrip();
         trayMenu.Items.Add("Show", null, (_, _) => RestoreFromTray());
         trayMenu.Items.Add(new Forms.ToolStripSeparator());
@@ -43,7 +45,7 @@ public partial class MainWindow : Window
         viewModel = new MidiInputDeviceViewModel(
             new WindowsMidiInputDeviceProvider(
                 loggerFactory?.CreateLogger<WindowsMidiInputDeviceProvider>()),
-            settingsCoordinator,
+            applicationSettings,
             loggerFactory,
             profileManager);
         DeviceList.DataContext = viewModel;

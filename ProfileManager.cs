@@ -80,6 +80,7 @@ public sealed class ProfileManager
             profiles.Add(profile);
         if (profiles.Count == 0)
         {
+            // Preserve selections from the pre-profile settings file when creating the first profile.
             var legacy = new Profile(Guid.NewGuid().ToString("N"), "Default", DateTime.UtcNow,
                 settings.Settings.SelectedDeviceIds, settings.Settings.DeviceChannelAssignments);
             profiles.Add(legacy);
@@ -92,7 +93,8 @@ public sealed class ProfileManager
 
     private void Replace(Profile updated)
     {
-        var index = profiles.IndexOf(profiles.First(profile => profile.Id == updated.Id));
+        var existing = profiles.First(profile => profile.Id == updated.Id);
+        var index = profiles.IndexOf(existing);
         store.Save(updated);
         profiles[index] = updated;
         if (ActiveProfile.Id == updated.Id) ActiveProfile = updated;
