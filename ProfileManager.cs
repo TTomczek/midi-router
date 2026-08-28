@@ -93,7 +93,9 @@ public sealed class ProfileManager
 
     private void Replace(Profile updated)
     {
-        var existing = profiles.First(profile => profile.Id == updated.Id);
+        var existing = profiles.FirstOrDefault(profile => profile.Id == updated.Id);
+        if (existing is null)
+            return;
         var index = profiles.IndexOf(existing);
         store.Save(updated);
         profiles[index] = updated;

@@ -13,6 +13,7 @@ public partial class MainWindow : Window
     private readonly Forms.ContextMenuStrip trayMenu;
     private readonly ThemeSettingsViewModel themeSettings;
     private readonly ProfileManager profileManager;
+    private readonly ApplicationSettingsCoordinator applicationSettings;
     private readonly ILoggerFactory? loggerFactory;
     private MidiRouterDeviceCoordinator? routerCoordinator;
     private bool routingInitializationStarted;
@@ -26,7 +27,7 @@ public partial class MainWindow : Window
         this.themeSettings = themeSettings;
         this.loggerFactory = loggerFactory;
         DataContext = themeSettings;
-        var applicationSettings = settingsCoordinator ?? new ApplicationSettingsCoordinator(new JsonSettingsStore());
+        applicationSettings = settingsCoordinator ?? new ApplicationSettingsCoordinator(new JsonSettingsStore());
         if (settingsCoordinator is null)
             applicationSettings.Load();
         profileManager = new ProfileManager(new ProfileStore(), applicationSettings);
