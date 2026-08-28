@@ -20,7 +20,7 @@ concurrency:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Check out repository
@@ -44,7 +44,7 @@ jobs:
     name: Publish Windows executable
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build-and-test
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Check out repository
