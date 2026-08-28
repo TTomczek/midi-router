@@ -147,29 +147,29 @@ public partial class MainWindow : Window
         {
             themeSettings.Select(AppearanceModeExtensions.Parse(value));
         }
+    }
 
-        private void ProfileSelector_SelectionChanged(object sender, Controls.SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0 && e.AddedItems[0] is Profile profile)
-                profileManager.Select(profile.Id);
-        }
+    private void ProfileSelector_SelectionChanged(object sender, Controls.SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is Profile profile)
+            profileManager.Select(profile.Id);
+    }
 
-        private void NewProfileMenuItem_Click(object sender, RoutedEventArgs e)
-            => profileManager.Create();
+    private void NewProfileMenuItem_Click(object sender, RoutedEventArgs e)
+        => profileManager.Create();
 
-        private void RenameProfileMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var name = ProfilePromptWindow.Show(this, "Rename profile", profileManager.ActiveProfile.Name);
-            if (name is not null)
-                profileManager.Rename(profileManager.ActiveProfile.Id, name);
-        }
+    private void RenameProfileMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        var name = ProfilePromptWindow.Show(this, "Rename profile", profileManager.ActiveProfile.Name);
+        if (name is not null)
+            profileManager.Rename(profileManager.ActiveProfile.Id, name);
+    }
 
-        private void DeleteProfileMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            if (MessageBox.Show(this, $"Delete profile '{profileManager.ActiveProfile.Name}'?",
-                "Delete profile", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                profileManager.Delete(profileManager.ActiveProfile.Id);
-        }
+    private void DeleteProfileMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (System.Windows.MessageBox.Show(this, $"Delete profile '{profileManager.ActiveProfile.Name}'?",
+            "Delete profile", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            profileManager.Delete(profileManager.ActiveProfile.Id);
     }
 
     private void DeviceList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)

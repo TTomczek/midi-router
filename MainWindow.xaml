@@ -18,7 +18,16 @@
                       DisplayMemberPath="Name" SelectedValuePath="Id"
                       SelectedValue="{Binding ActiveProfile.Id, Mode=OneWay}"
                       SelectionChanged="ProfileSelector_SelectionChanged"
-                      ToolTip="Profile" AutomationProperties.Name="Profile"/>
+                      ToolTip="Profile" AutomationProperties.Name="Profile">
+                <ComboBox.ContextMenu>
+                    <ContextMenu Background="{DynamicResource SurfaceBrush}"
+                                 Foreground="{DynamicResource PrimaryTextBrush}">
+                        <MenuItem Header="New profile" Click="NewProfileMenuItem_Click"/>
+                        <MenuItem Header="Rename profile" Click="RenameProfileMenuItem_Click"/>
+                        <MenuItem Header="Delete profile" Click="DeleteProfileMenuItem_Click"/>
+                    </ContextMenu>
+                </ComboBox.ContextMenu>
+            </ComboBox>
             <Button DockPanel.Dock="Right" Width="36" Height="36" Padding="0" Content="⚙"
                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                     Background="Transparent" BorderBrush="Transparent"
@@ -47,10 +56,6 @@
                         <MenuItem x:Name="MinimizeToTrayMenuItem" Header="Minimize to tray"
                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                   IsCheckable="True" Click="MinimizeToTrayMenuItem_Click"/>
-                        <Separator/>
-                        <MenuItem Header="New profile" Click="NewProfileMenuItem_Click"/>
-                        <MenuItem Header="Rename profile" Click="RenameProfileMenuItem_Click"/>
-                        <MenuItem Header="Delete profile" Click="DeleteProfileMenuItem_Click"/>
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>

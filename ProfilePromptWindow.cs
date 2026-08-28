@@ -19,7 +19,7 @@ internal sealed class ProfilePromptWindow : Window
         nameBox = new Controls.TextBox { Text = initial, Margin = new Thickness(0, 8, 0, 12) };
         panel.Children.Add(nameBox);
         var buttons = new Controls.StackPanel { Orientation = Controls.Orientation.Horizontal,
-            HorizontalAlignment = HorizontalAlignment.Right };
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Right };
         var cancel = new Controls.Button { Content = "Cancel", Width = 80, IsCancel = true };
         var ok = new Controls.Button { Content = "OK", Width = 80, IsDefault = true, Margin = new Thickness(8, 0, 0, 0) };
         ok.Click += (_, _) => { if (!string.IsNullOrWhiteSpace(nameBox.Text)) DialogResult = true; };
