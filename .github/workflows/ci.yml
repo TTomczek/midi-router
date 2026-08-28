@@ -32,7 +32,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Restore dependencies
-        run: dotnet restore midi-router.sln --source .\local-nuget --source https://api.nuget.org/v3/index.json
+        run: dotnet restore midi-router.sln --source ".\local-nuget;https://api.nuget.org/v3/index.json"
 
       - name: Build solution
         run: dotnet build midi-router.sln --configuration Release --no-restore
@@ -56,7 +56,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Restore dependencies
-        run: dotnet restore midi-router.csproj --runtime win-x64 --source .\local-nuget --source https://api.nuget.org/v3/index.json
+        run: dotnet restore midi-router.csproj --runtime win-x64 --source ".\local-nuget;https://api.nuget.org/v3/index.json"
 
       - name: Publish single-file executable
         run: >
