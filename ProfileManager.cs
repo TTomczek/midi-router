@@ -92,7 +92,7 @@ public sealed class ProfileManager
 
     private void Replace(Profile updated)
     {
-        var index = profiles.IndexOf(ActiveProfile);
+        var index = profiles.IndexOf(profiles.First(profile => profile.Id == updated.Id));
         store.Save(updated);
         profiles[index] = updated;
         if (ActiveProfile.Id == updated.Id) ActiveProfile = updated;
