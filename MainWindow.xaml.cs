@@ -12,6 +12,7 @@ public partial class MainWindow : Window
     private readonly Forms.NotifyIcon trayIcon;
     private readonly Forms.ContextMenuStrip trayMenu;
     private readonly ThemeSettingsViewModel themeSettings;
+    private readonly ProfileManager profileManager;
     private readonly ILoggerFactory? loggerFactory;
     private MidiRouterDeviceCoordinator? routerCoordinator;
     private bool routingInitializationStarted;
@@ -25,6 +26,8 @@ public partial class MainWindow : Window
         this.themeSettings = themeSettings;
         this.loggerFactory = loggerFactory;
         DataContext = themeSettings;
+        profileManager = new ProfileManager(
+            new ProfileStore(), settingsCoordinator ?? new ApplicationSettingsCoordinator(new JsonSettingsStore()));
         trayMenu = new Forms.ContextMenuStrip();
         trayMenu.Items.Add("Show", null, (_, _) => RestoreFromTray());
         trayMenu.Items.Add(new Forms.ToolStripSeparator());
@@ -41,8 +44,10 @@ public partial class MainWindow : Window
             new WindowsMidiInputDeviceProvider(
                 loggerFactory?.CreateLogger<WindowsMidiInputDeviceProvider>()),
             settingsCoordinator,
-            loggerFactory);
+            loggerFactory,
+            profileManager);
         DeviceList.DataContext = viewModel;
+        ProfileSelector.DataContext = profileManager;
         ContentRendered += MainWindow_ContentRendered;
     }
 
@@ -141,6 +146,29 @@ public partial class MainWindow : Window
         if (sender is Controls.MenuItem { Tag: string value })
         {
             themeSettings.Select(AppearanceModeExtensions.Parse(value));
+        }
+
+        private void ProfileSelector_SelectionChanged(object sender, Controls.SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0 && e.AddedItems[0] is Profile profile)
+                profileManager.Select(profile.Id);
+        }
+
+        private void NewProfileMenuItem_Click(object sender, RoutedEventArgs e)
+            => profileManager.Create();
+
+        private void RenameProfileMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var name = ProfilePromptWindow.Show(this, "Rename profile", profileManager.ActiveProfile.Name);
+            if (name is not null)
+                profileManager.Rename(profileManager.ActiveProfile.Id, name);
+        }
+
+        private void DeleteProfileMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show(this, $"Delete profile '{profileManager.ActiveProfile.Name}'?",
+                "Delete profile", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                profileManager.Delete(profileManager.ActiveProfile.Id);
         }
     }
 

@@ -10,6 +10,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
 {
     private readonly MidiDeviceMonitor monitor;
     private readonly ApplicationSettingsCoordinator? settings;
+    private readonly ProfileManager? profileManager;
     private readonly ILogger<MidiInputDeviceViewModel> logger;
     private readonly ObservableCollection<MidiInputDeviceRow> rows = new();
     private readonly HashSet<string> selectedDeviceIds;
@@ -22,16 +23,20 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
     public MidiInputDeviceViewModel(
         IMidiInputDeviceProvider provider,
         ApplicationSettingsCoordinator? settings = null,
-        ILoggerFactory? loggerFactory = null)
+        ILoggerFactory? loggerFactory = null,
+        ProfileManager? profileManager = null)
     {
         this.settings = settings;
+        this.profileManager = profileManager;
         this.logger = loggerFactory?.CreateLogger<MidiInputDeviceViewModel>() ?? LoggerFactory
             .Create(builder => builder.AddDebug())
             .CreateLogger<MidiInputDeviceViewModel>();
         selectedDeviceIds = new HashSet<string>(
+            profileManager?.ActiveProfile.SelectedDeviceIds ??
             settings?.Settings.SelectedDeviceIds ?? Array.Empty<string>(),
             StringComparer.Ordinal);
-        channelAssignments = (settings?.Settings.DeviceChannelAssignments ??
+        channelAssignments = (profileManager?.ActiveProfile.DeviceChannelAssignments ??
+            settings?.Settings.DeviceChannelAssignments ??
             new Dictionary<string, int>())
             .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
         Devices = new ReadOnlyObservableCollection<MidiInputDeviceRow>(rows);
@@ -39,6 +44,8 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
             provider,
             loggerFactory?.CreateLogger<MidiDeviceMonitor>());
         monitor.SnapshotAvailable += OnSnapshotAvailable;
+        if (profileManager is not null)
+            profileManager.ActiveProfileChanged += OnActiveProfileChanged;
     }
 
     public ReadOnlyObservableCollection<MidiInputDeviceRow> Devices { get; }
@@ -83,9 +90,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
             AssignMissingChannel(endpointDeviceId);
         }
 
-        settings?.Update(
-            current => current with { SelectedDeviceIds = selectedDeviceIds.ToArray() },
-            "Device selection");
+        SaveProfile();
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDeviceIds)));
         RoutingStateChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -151,15 +156,7 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
             row.SetChannel(internalChannel);
         }
 
-        settings?.Update(
-            current => current with
-            {
-                DeviceChannelAssignments = channelAssignments.ToDictionary(
-                    pair => pair.Key,
-                    pair => pair.Value,
-                    StringComparer.Ordinal)
-            },
-            "MIDI channel assignment");
+        SaveProfile();
         StatusMessage = null;
         RoutingStateChanged?.Invoke(this, EventArgs.Empty);
         return true;
@@ -222,15 +219,46 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
             row.SetChannel(channel);
         }
 
-        settings?.Update(
-            current => current with
+        SaveProfile();
+    }
+
+    private void SaveProfile()
+    {
+        if (profileManager is not null)
+        {
+            profileManager.UpdateActive(profile => profile with
             {
+                SelectedDeviceIds = selectedDeviceIds.ToArray(),
                 DeviceChannelAssignments = channelAssignments.ToDictionary(
-                    pair => pair.Key,
-                    pair => pair.Value,
-                    StringComparer.Ordinal)
-            },
-            "MIDI channel assignment");
+                    pair => pair.Key, pair => pair.Value, StringComparer.Ordinal)
+            });
+        }
+        else
+        {
+            settings?.Update(current => current with
+            {
+                SelectedDeviceIds = selectedDeviceIds.ToArray(),
+                DeviceChannelAssignments = channelAssignments.ToDictionary(
+                    pair => pair.Key, pair => pair.Value, StringComparer.Ordinal)
+            }, "Device selection");
+        }
+    }
+
+    private void OnActiveProfileChanged(object? sender, EventArgs e)
+    {
+        selectedDeviceIds.Clear();
+        selectedDeviceIds.UnionWith(profileManager!.ActiveProfile.SelectedDeviceIds ?? Array.Empty<string>());
+        channelAssignments.Clear();
+        foreach (var pair in profileManager.ActiveProfile.DeviceChannelAssignments ??
+            new Dictionary<string, int>())
+            channelAssignments[pair.Key] = pair.Value;
+        foreach (var row in rows)
+        {
+            row.IsSelected = selectedDeviceIds.Contains(row.EndpointDeviceId);
+            row.SetChannel(channelAssignments.GetValueOrDefault(row.EndpointDeviceId));
+        }
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDeviceIds)));
+        RoutingStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void SetField<T>(ref T field, T value, [CallerMemberName] string? name = null)
@@ -250,6 +278,8 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         }
 
         monitor.SnapshotAvailable -= OnSnapshotAvailable;
+        if (profileManager is not null)
+            profileManager.ActiveProfileChanged -= OnActiveProfileChanged;
         foreach (var row in rows)
         {
             row.Dispose();
