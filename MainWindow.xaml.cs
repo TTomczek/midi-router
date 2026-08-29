@@ -162,14 +162,20 @@ public partial class MainWindow : Window
     {
         var name = ProfilePromptWindow.Show(this, "New profile", "New profile");
         if (name is not null)
-            profileManager.Create(name);
+        {
+            var profile = profileManager.Create(name);
+            ProfileSelector.SelectedItem = profile;
+        }
     }
 
     private void RenameProfileMenuItem_Click(object sender, RoutedEventArgs e)
     {
         var name = ProfilePromptWindow.Show(this, "Rename profile", profileManager.ActiveProfile.Name);
         if (name is not null)
+        {
             profileManager.Rename(profileManager.ActiveProfile.Id, name);
+            ProfileSelector.Items.Refresh();
+        }
     }
 
     private void DeleteProfileMenuItem_Click(object sender, RoutedEventArgs e)
@@ -177,6 +183,7 @@ public partial class MainWindow : Window
         if (System.Windows.MessageBox.Show(this, $"Delete profile '{profileManager.ActiveProfile.Name}'?",
             "Delete profile", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             profileManager.Delete(profileManager.ActiveProfile.Id);
+        ProfileSelector.SelectedItem = profileManager.ActiveProfile;
     }
 
     private void DeviceList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)

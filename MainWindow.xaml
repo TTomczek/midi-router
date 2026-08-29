@@ -15,8 +15,8 @@
         <DockPanel LastChildFill="False">
             <ComboBox x:Name="ProfileSelector" DockPanel.Dock="Right" Width="150" Height="30"
                       Margin="0,3,10,0" ItemsSource="{Binding Profiles}"
-                      DisplayMemberPath="Name" SelectedValuePath="Id"
-                      SelectedValue="{Binding ActiveProfile.Id, Mode=OneWay}"
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding ActiveProfile, Mode=OneWay}"
                       SelectionChanged="ProfileSelector_SelectionChanged"
                       ToolTip="Profile" AutomationProperties.Name="Profile">
                 <ComboBox.ContextMenu>
@@ -28,6 +28,9 @@
                     </ContextMenu>
                 </ComboBox.ContextMenu>
             </ComboBox>
+            <Button DockPanel.Dock="Right" Width="30" Height="30" Margin="0,3,6,0"
+                    Content="+" ToolTip="New profile" AutomationProperties.Name="New profile"
+                    Click="NewProfileMenuItem_Click"/>
             <Button DockPanel.Dock="Right" Width="36" Height="36" Padding="0" Content="⚙"
                     VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                     Background="Transparent" BorderBrush="Transparent"
