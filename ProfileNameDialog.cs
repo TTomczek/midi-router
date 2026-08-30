@@ -36,7 +36,8 @@ public sealed class ProfileNameDialog : Window
         {
             Text = initialName,
             Margin = new Thickness(0, 8, 0, 16),
-            Height = 30
+            Height = 30,
+            VerticalContentAlignment = System.Windows.VerticalAlignment.Center
         };
         System.Windows.Automation.AutomationProperties.SetName(nameInput, "Profile name");
         nameInput.KeyDown += NameInput_KeyDown;
