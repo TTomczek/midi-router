@@ -71,6 +71,9 @@ public sealed class ApplicationSettingsCoordinator
                     pair.Value is >= MidiChannelAllocator.FirstChannel and <= MidiChannelAllocator.LastChannel)
                 .GroupBy(pair => pair.Key, StringComparer.Ordinal)
                 .Select(group => group.First())
-                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal)
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal),
+            ActiveProfileId = string.IsNullOrWhiteSpace(settings.ActiveProfileId)
+                ? null
+                : settings.ActiveProfileId.Trim()
         };
 }

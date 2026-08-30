@@ -39,6 +39,16 @@ passende Gerät zurückgesendet.
 Die Geräte-Enumeration ist über `IMidiInputDeviceProvider` abstrahiert. Dadurch
 kann die UI-Logik ohne physische MIDI-Hardware getestet werden.
 
+## Profile
+
+Die aktive Konfiguration wird links neben dem Einstellungsmenü ausgewählt. Profile
+werden getrennt unter `%LOCALAPPDATA%\MIDI Router\Profiles` gespeichert und enthalten
+Geräteauswahl, Kanalzuordnung und Änderungszeitpunkt. Der erste Eintrag erstellt ein
+leeres Profil; vorhandene Einträge können per Doppelklick umbenannt und über die
+Minus-Schaltfläche (außer beim letzten Profil) nach Bestätigung gelöscht werden.
+Gleichnamige Profile bleiben intern getrennt und erhalten in der Auswahl fortlaufende
+Anzeigenamen wie `Studio`, `Studio (2)` und `Studio (3)`.
+
 ## Protokollierung
 
 Die Anwendung schreibt Aktionen und MIDI-Geräteereignisse dauerhaft nach

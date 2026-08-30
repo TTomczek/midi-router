@@ -115,6 +115,28 @@ public sealed class JsonSettingsStoreTests
     }
 
     [Fact]
+    public void RoundTripsActiveProfileIdWithoutChangingGlobalSettings()
+    {
+        var path = TemporaryPath();
+        try
+        {
+            var store = new JsonSettingsStore(path);
+            store.Save(new ApplicationSettings(
+                AppearanceMode.Dark, true, ActiveProfileId: "profile-a"));
+
+            var settings = store.Load();
+
+            Assert.Equal("profile-a", settings.ActiveProfileId);
+            Assert.Equal(AppearanceMode.Dark, settings.AppearanceMode);
+            Assert.True(settings.MinimizeToTray);
+        }
+        finally
+        {
+            Delete(path);
+        }
+    }
+
+    [Fact]
     public void MalformedFileThrowsForDiagnosticHandling()
     {
         var path = TemporaryPath();

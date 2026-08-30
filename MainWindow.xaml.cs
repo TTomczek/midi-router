@@ -12,6 +12,7 @@ public partial class MainWindow : Window
     private readonly Forms.NotifyIcon trayIcon;
     private readonly Forms.ContextMenuStrip trayMenu;
     private readonly ThemeSettingsViewModel themeSettings;
+    private readonly ProfileManager? profileManager;
     private readonly ILoggerFactory? loggerFactory;
     private MidiRouterDeviceCoordinator? routerCoordinator;
     private bool routingInitializationStarted;
@@ -19,11 +20,13 @@ public partial class MainWindow : Window
     public MainWindow(
         ThemeSettingsViewModel themeSettings,
         ApplicationSettingsCoordinator? settingsCoordinator = null,
-        ILoggerFactory? loggerFactory = null)
+        ILoggerFactory? loggerFactory = null,
+        ProfileManager? profileManager = null)
     {
         InitializeComponent();
         this.themeSettings = themeSettings;
         this.loggerFactory = loggerFactory;
+        this.profileManager = profileManager;
         DataContext = themeSettings;
         trayMenu = new Forms.ContextMenuStrip();
         trayMenu.Items.Add("Show", null, (_, _) => RestoreFromTray());
@@ -41,8 +44,19 @@ public partial class MainWindow : Window
             new WindowsMidiInputDeviceProvider(
                 loggerFactory?.CreateLogger<WindowsMidiInputDeviceProvider>()),
             settingsCoordinator,
-            loggerFactory);
+            loggerFactory,
+            profileManager);
         DeviceList.DataContext = viewModel;
+        if (profileManager is not null)
+        {
+            ProfileSelector.DataContext = profileManager;
+            ProfileSelector.ItemsSource = profileManager.ProfileItems;
+            ProfileSelector.SelectedValuePath = nameof(ProfileListItem.Id);
+            ProfileSelector.SelectedValue = profileManager.ActiveProfileId;
+            profileManager.Diagnostic += ProfileManager_Diagnostic;
+            profileManager.ActiveProfileChanged += ProfileManager_ActiveProfileChanged;
+            profileManager.ProfilesChanged += ProfileManager_ProfilesChanged;
+        }
         ContentRendered += MainWindow_ContentRendered;
     }
 
@@ -144,6 +158,107 @@ public partial class MainWindow : Window
         }
     }
 
+    private void ProfileSelector_SelectionChanged(object sender, Controls.SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0 || profileManager is null ||
+                e.AddedItems[0] is not ProfileListItem item)
+            {
+                return;
+            }
+            if (item.IsCreate)
+            {
+                ProfileSelector.SelectedValue = profileManager.ActiveProfileId;
+                ShowProfileNameDialog(null);
+                return;
+            }
+            profileManager.Select(item.Id);
+            ProfileSelector.IsDropDownOpen = false;
+        }
+
+        private void ProfileEntry_ContextMenuOpening(object sender, Controls.ContextMenuEventArgs e)
+        {
+            if (sender is FrameworkElement { DataContext: ProfileListItem { IsCreate: true } })
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void RenameProfileMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (profileManager is null || sender is not Controls.MenuItem { Tag: string id })
+        {
+            return;
+        }
+
+        var item = profileManager.ProfileItems.FirstOrDefault(profile => profile.Id == id);
+        if (item is not null)
+        {
+            ShowProfileNameDialog(item);
+        }
+    }
+
+    private void DeleteProfileMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (profileManager is null || sender is not Controls.MenuItem { Tag: string id })
+            {
+                return;
+            }
+            var item = profileManager.ProfileItems.FirstOrDefault(profile => profile.Id == id);
+            if (item is null || System.Windows.MessageBox.Show(
+                    $"Delete profile '{item.DisplayName}'?",
+                    "Delete profile", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            {
+                return;
+            }
+            profileManager.Delete(id);
+        }
+
+    private void ShowProfileNameDialog(ProfileListItem? item)
+    {
+        if (profileManager is null)
+        {
+            return;
+        }
+
+        var dialog = new ProfileNameDialog(
+            item is null ? "Create profile" : "Rename profile",
+            item?.Name ?? string.Empty)
+        {
+            Owner = this
+        };
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var committed = item is null
+            ? profileManager.TryCreate(dialog.ProfileName, out _)
+            : profileManager.TryRename(item.Id, dialog.ProfileName);
+        if (committed)
+        {
+            ProfileSelector.IsDropDownOpen = false;
+        }
+    }
+
+    private void ProfileManager_Diagnostic(object? sender, string message)
+        => viewModel.StatusMessageFromRouter(message);
+
+    private void ProfileManager_ActiveProfileChanged(object? sender, EventArgs e)
+    {
+        if (profileManager is not null)
+        {
+            ProfileSelector.SelectedValue = profileManager.ActiveProfileId;
+        }
+    }
+
+    private void ProfileManager_ProfilesChanged(object? sender, EventArgs e)
+    {
+        if (profileManager is not null)
+        {
+            ProfileSelector.SelectedValue = profileManager.ActiveProfileId;
+        }
+    }
+
     private void DeviceList_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.OriginalSource is not DependencyObject source ||
@@ -189,6 +304,12 @@ public partial class MainWindow : Window
     {
         ContentRendered -= MainWindow_ContentRendered;
         viewModel.Dispose();
+        if (profileManager is not null)
+        {
+            profileManager.Diagnostic -= ProfileManager_Diagnostic;
+            profileManager.ActiveProfileChanged -= ProfileManager_ActiveProfileChanged;
+            profileManager.ProfilesChanged -= ProfileManager_ProfilesChanged;
+        }
         routerCoordinator?.Dispose();
         trayIcon.MouseClick -= TrayIcon_MouseClick;
         trayIcon.Visible = false;

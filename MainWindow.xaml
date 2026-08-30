@@ -44,6 +44,59 @@
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
+            <ComboBox x:Name="ProfileSelector" DockPanel.Dock="Right" Width="190" Height="32"
+                      Margin="0,2,10,2" VerticalContentAlignment="Center"
+                      AutomationProperties.Name="Active profile"
+                      SelectionChanged="ProfileSelector_SelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Background="Transparent"
+                              ContextMenuOpening="ProfileEntry_ContextMenuOpening">
+                            <Grid.ContextMenu>
+                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext,
+                                    RelativeSource={RelativeSource Self}}"
+                                             Background="{DynamicResource SurfaceBrush}"
+                                             Foreground="{DynamicResource PrimaryTextBrush}"
+                                             BorderBrush="{DynamicResource BorderBrush}">
+                                    <MenuItem Header="Rename" Tag="{Binding Id}"
+                                              Click="RenameProfileMenuItem_Click">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CanRename}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete" Tag="{Binding Id}"
+                                              Click="DeleteProfileMenuItem_Click">
+                                        <MenuItem.Style>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsDeletable}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+                            <TextBlock Text="{Binding DisplayName}"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="MIDI Router" FontSize="22" FontWeight="SemiBold"/>
                 <TextBlock Text="Connected MIDI devices" Margin="0,4,0,0"

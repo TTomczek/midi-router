@@ -34,6 +34,20 @@ public sealed class ApplicationSettingsCoordinatorTests
         Assert.Contains(messages, message => message.Contains("could not be saved"));
     }
 
+    [Fact]
+    public void UpdatingActiveProfilePreservesAppearanceAndTraySettings()
+    {
+        var store = new Store(new ApplicationSettings(AppearanceMode.Dark, true));
+        var coordinator = new ApplicationSettingsCoordinator(store);
+        coordinator.Load();
+
+        coordinator.Update(current => current with { ActiveProfileId = "profile-a" }, "Active profile");
+
+        Assert.Equal("profile-a", store.Settings.ActiveProfileId);
+        Assert.Equal(AppearanceMode.Dark, store.Settings.AppearanceMode);
+        Assert.True(store.Settings.MinimizeToTray);
+    }
+
     private sealed class Store(ApplicationSettings initial) : ISettingsStore
     {
         public ApplicationSettings Settings { get; private set; } = initial;

@@ -29,6 +29,11 @@ namespace midi_router
                 new JsonSettingsStore(),
                 message => System.Diagnostics.Debug.WriteLine(message));
             settingsCoordinator.Load();
+            var profileManager = new ProfileManager(
+                new JsonProfileStore(),
+                settingsCoordinator,
+                message => System.Diagnostics.Debug.WriteLine(message));
+            profileManager.Load();
             themeManager = new ThemeManager(
                 settingsCoordinator,
                 new WindowsOperatingSystemThemeProvider(),
@@ -36,7 +41,8 @@ namespace midi_router
             themeManager.Load();
             themeSettings = new ThemeSettingsViewModel(themeManager);
 
-            var window = new MainWindow(themeSettings, settingsCoordinator, loggerFactory);
+            var window = new MainWindow(
+                themeSettings, settingsCoordinator, loggerFactory, profileManager);
             MainWindow = window;
             window.Show();
         }

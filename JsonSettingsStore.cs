@@ -71,6 +71,9 @@ public sealed class JsonSettingsStore : ISettingsStore
             SelectedDeviceIds = (settings.SelectedDeviceIds ?? Array.Empty<string>())
                 .Where(id => !string.IsNullOrWhiteSpace(id))
                 .Distinct(StringComparer.Ordinal)
-                .ToArray()
+                .ToArray(),
+            ActiveProfileId = string.IsNullOrWhiteSpace(settings.ActiveProfileId)
+                ? null
+                : settings.ActiveProfileId.Trim()
         };
 }
