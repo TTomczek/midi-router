@@ -58,7 +58,7 @@ namespace Windows.Devices.Midi2.Enumeration.Legacy
     {
         MidiLegacyPortDeviceInformation RemovedDevice { get; }
     }
-    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("6F60338B-426D-507F-8D6A-76E3C7A245EA")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Enumeration.Legacy.IMidiLegacyPortDeviceInformationStatics))]
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-EE004001A000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Enumeration.Legacy.IMidiLegacyPortDeviceInformationStatics))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiEnumerationLegacyApiContract), 65536u)]
     internal interface IMidiLegacyPortDeviceInformationStatics
     {
@@ -1176,13 +1176,13 @@ namespace ABI.Windows.Devices.Midi2.Enumeration.Legacy
             [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get
             {
-                global::System.ReadOnlySpan<byte> data = new byte[] { 0x8B, 0x33, 0x60, 0x6F, 0x6D, 0x42, 0x7F, 0x50, 0x8D, 0x6A, 0x76, 0xE3, 0xC7, 0xA2, 0x45, 0xEA };
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xEE, 0x0, 0x40, 0x1, 0xA0, 0x0 };
                 return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
             }
         }
 
     }
-    [Guid("6F60338B-426D-507F-8D6A-76E3C7A245EA")]
+    [Guid("8087B303-0519-C0DE-31D1-EE004001A000")]
     internal interface IMidiLegacyPortDeviceInformationStatics : global::Windows.Devices.Midi2.Enumeration.Legacy.IMidiLegacyPortDeviceInformationStatics
     {
     }

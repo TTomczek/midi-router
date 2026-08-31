@@ -77,11 +77,12 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
 
         foreach (var endpoint in endpoints.ToArray())
         {
-            session.DisconnectEndpointConnection(endpoint.ConnectionId);
             endpoint.Dispose();
+            session.DisconnectEndpointConnection(endpoint.ConnectionId);
         }
 
         endpoints.Clear();
+        virtualDevice?.Cleanup();
         session.Dispose();
         virtualDevice = null;
     }
@@ -164,6 +165,10 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
             }
 
             connection.MessageReceived -= OnMessageReceived;
+            if (virtualDevice is not null)
+            {
+                connection.RemoveMessageProcessingPlugin(virtualDevice.PluginId);
+            }
         }
     }
 }

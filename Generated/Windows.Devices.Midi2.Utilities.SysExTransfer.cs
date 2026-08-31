@@ -46,7 +46,7 @@ namespace Windows.Devices.Midi2.Utilities.SysExTransfer
         bool IsReceiving { get; }
         event global::Windows.Foundation.TypedEventHandler<MidiSystemExclusiveReceiver, MidiSystemExclusiveReceivedEventArgs> BytesReceived;
     }
-    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-FF00E0305000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Utilities.SysExTransfer.IMidiSystemExclusiveReceiverFactory))]
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-FF00E0304000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Utilities.SysExTransfer.IMidiSystemExclusiveReceiverFactory))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiSysExTransferUtilityApiContract), 65536u)]
     internal interface IMidiSystemExclusiveReceiverFactory
     {
@@ -608,13 +608,13 @@ namespace ABI.Windows.Devices.Midi2.Utilities.SysExTransfer
             [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get
             {
-                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xFF, 0x0, 0xE0, 0x30, 0x50, 0x0 };
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xFF, 0x0, 0xE0, 0x30, 0x40, 0x0 };
                 return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
             }
         }
 
     }
-    [Guid("8087B303-0519-C0DE-31D1-FF00E0305000")]
+    [Guid("8087B303-0519-C0DE-31D1-FF00E0304000")]
     internal interface IMidiSystemExclusiveReceiverFactory : global::Windows.Devices.Midi2.Utilities.SysExTransfer.IMidiSystemExclusiveReceiverFactory
     {
     }

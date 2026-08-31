@@ -37,10 +37,14 @@ namespace Windows.Devices.Midi2.Transports.Network
         string FullName { get; }
         string HostName { get; }
         global::System.Collections.Generic.IReadOnlyList<string> IPAddresses { get; }
+        global::System.Collections.Generic.IReadOnlyList<string> IPv4Addresses { get; }
+        global::System.Collections.Generic.IReadOnlyList<string> IPv6Addresses { get; }
+        global::System.DateTimeOffset LastSeenTime { get; }
         ushort Port { get; }
         string ProductInstanceId { get; }
         string ServiceInstanceName { get; }
         string ServiceType { get; }
+        global::System.Collections.Generic.IReadOnlyDictionary<string, string> TextAttributes { get; }
         string UmpEndpointName { get; }
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD00F0313000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostAddedEventArgs))]
@@ -53,15 +57,16 @@ namespace Windows.Devices.Midi2.Transports.Network
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
     internal interface IMidiNetworkAdvertisedHostRemovedEventArgs
     {
-        global::Windows.Devices.Enumeration.DeviceInformationUpdate DeviceInformationUpdate { get; }
+        string FullName { get; }
         string HostDeviceId { get; }
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD00F0315000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostUpdatedEventArgs))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
     internal interface IMidiNetworkAdvertisedHostUpdatedEventArgs
     {
-        global::Windows.Devices.Enumeration.DeviceInformationUpdate DeviceInformationUpdate { get; }
+        MidiNetworkAdvertisedHostChangedProperties ChangedProperties { get; }
         string HostDeviceId { get; }
+        MidiNetworkAdvertisedHost UpdatedHost { get; }
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD00F0312000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostWatcher))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
@@ -70,7 +75,7 @@ namespace Windows.Devices.Midi2.Transports.Network
         void Start();
         void Stop();
         global::System.Collections.Generic.IReadOnlyDictionary<string, MidiNetworkAdvertisedHost> EnumeratedHosts { get; }
-        global::Windows.Devices.Enumeration.DeviceWatcherStatus Status { get; }
+        bool IsStarted { get; }
         event global::Windows.Foundation.TypedEventHandler<MidiNetworkAdvertisedHostWatcher, MidiNetworkAdvertisedHostAddedEventArgs> Added;
         event global::Windows.Foundation.TypedEventHandler<MidiNetworkAdvertisedHostWatcher, object> EnumerationCompleted;
         event global::Windows.Foundation.TypedEventHandler<MidiNetworkAdvertisedHostWatcher, MidiNetworkAdvertisedHostRemovedEventArgs> Removed;
@@ -163,6 +168,9 @@ namespace Windows.Devices.Midi2.Transports.Network
     {
         string ActualAddress { get; }
         string ActualPort { get; }
+        string ActualServiceInstanceName { get; }
+        bool AllowPortFallback { get; }
+        string ConfiguredPort { get; }
         global::System.Collections.Generic.IReadOnlyList<MidiNetworkHostConnection> Connections { get; }
         bool CreateMidi1Ports { get; }
         bool HasStarted { get; }
@@ -171,7 +179,9 @@ namespace Windows.Devices.Midi2.Transports.Network
         string ProductInstanceId { get; }
         MidiNetworkRemoteClientPolicy RemoteClientPolicy { get; }
         string ServiceInstanceName { get; }
+        bool ServiceInstanceNameWasChanged { get; }
         string UmpEndpointName { get; }
+        bool UsedPortFallback { get; }
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD00F0316000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostConnection))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
@@ -195,6 +205,7 @@ namespace Windows.Devices.Midi2.Transports.Network
     internal interface IMidiNetworkHostCreationConfig
     {
         bool Advertise { get; set; }
+        bool AllowPortFallback { get; set; }
         MidiNetworkAuthenticationType AuthenticationType { get; set; }
         bool CreateOnlyUmpEndpoints { get; set; }
         Guid HostId { get; }
@@ -211,6 +222,8 @@ namespace Windows.Devices.Midi2.Transports.Network
     {
         MidiNetworkHostCreationConfig CreateDefault();
         string EnsureCompliantServiceInstanceName(string serviceInstanceName);
+        bool IsServiceInstanceNameAvailable(string serviceInstanceName);
+        string MakeUniqueServiceInstanceName(string baseServiceInstanceName);
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD00F0303000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationResponse))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
@@ -331,14 +344,43 @@ namespace Windows.Devices.Midi2.Transports.Network
         global::System.Collections.Generic.IReadOnlyList<MidiNetworkConfiguredHost> GetConfiguredHosts();
         global::System.Collections.Generic.IReadOnlyList<MidiNetworkConfiguredClient> GetConfiguredClients();
         global::System.Collections.Generic.IReadOnlyList<MidiNetworkPendingRemoteClient> GetPendingRemoteClients();
+        MidiNetworkTransportSettings GetTransportSettings();
         global::System.Collections.Generic.IReadOnlyList<MidiNetworkAdvertisedHost> GetAdvertisedHosts();
+        ushort GenerateAvailableHostPort();
+        bool IsHostPortAvailable(ushort port);
         bool IsTransportAvailable { get; }
         string MidiNetworkUdpDnsDomain { get; }
-        global::Windows.Devices.Enumeration.DeviceInformationKind MidiNetworkUdpDnsSdDeviceInformationKind { get; }
-        global::System.Collections.Generic.IList<string> MidiNetworkUdpDnsSdQueryAdditionalProperties { get; }
-        string MidiNetworkUdpDnsSdQueryString { get; }
+        string MidiNetworkUdpDnsSdQueryName { get; }
         string MidiNetworkUdpDnsServiceType { get; }
         Guid TransportId { get; }
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD00F0319000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettings))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
+    internal interface IMidiNetworkTransportSettings
+    {
+        uint DirectConnectionScanIntervalMilliseconds { get; set; }
+        uint InvitationPendingTimeoutMilliseconds { get; set; }
+        uint MaxForwardErrorCorrectionCommandPackets { get; set; }
+        uint MaxHostConnections { get; set; }
+        uint MaxRetransmitBufferCommandPackets { get; set; }
+        uint OutboundPingIntervalMilliseconds { get; set; }
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-EE00F0319000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStatics))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
+    internal interface IMidiNetworkTransportSettingsStatics
+    {
+        uint MaxDirectConnectionScanIntervalMilliseconds { get; }
+        uint MaxInvitationPendingTimeoutMilliseconds { get; }
+        uint MaxMaxForwardErrorCorrectionCommandPackets { get; }
+        uint MaxMaxHostConnections { get; }
+        uint MaxMaxRetransmitBufferCommandPackets { get; }
+        uint MaxOutboundPingIntervalMilliseconds { get; }
+        uint MinDirectConnectionScanIntervalMilliseconds { get; }
+        uint MinInvitationPendingTimeoutMilliseconds { get; }
+        uint MinMaxForwardErrorCorrectionCommandPackets { get; }
+        uint MinMaxHostConnections { get; }
+        uint MinMaxRetransmitBufferCommandPackets { get; }
+        uint MinOutboundPingIntervalMilliseconds { get; }
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")]
     [global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost))]
@@ -408,6 +450,12 @@ namespace Windows.Devices.Midi2.Transports.Network
 
         public global::System.Collections.Generic.IReadOnlyList<string> IPAddresses => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_IPAddresses(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
 
+        public global::System.Collections.Generic.IReadOnlyList<string> IPv4Addresses => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_IPv4Addresses(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
+
+        public global::System.Collections.Generic.IReadOnlyList<string> IPv6Addresses => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_IPv6Addresses(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
+
+        public global::System.DateTimeOffset LastSeenTime => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_LastSeenTime(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
+
         public ushort Port => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_Port(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
 
         public string ProductInstanceId => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_ProductInstanceId(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
@@ -415,6 +463,8 @@ namespace Windows.Devices.Midi2.Transports.Network
         public string ServiceInstanceName => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_ServiceInstanceName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
 
         public string ServiceType => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_ServiceType(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
+
+        public global::System.Collections.Generic.IReadOnlyDictionary<string, string> TextAttributes => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_TextAttributes(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
 
         public string UmpEndpointName => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostMethods.get_UmpEndpointName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHost);
 
@@ -512,6 +562,17 @@ namespace Windows.Devices.Midi2.Transports.Network
             return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.NotHandled;
         }
     }
+    [FlagsAttribute]
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][global::WinRT.WinRTExposedType(typeof(global::WinRT.EnumTypeDetails<MidiNetworkAdvertisedHostChangedProperties>))][global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
+    public enum MidiNetworkAdvertisedHostChangedProperties : uint
+    {
+        None = unchecked((uint)0),
+        HostName = unchecked((uint)0x1),
+        Port = unchecked((uint)0x2),
+        IPv4Addresses = unchecked((uint)0x4),
+        IPv6Addresses = unchecked((uint)0x8),
+        TextAttributes = unchecked((uint)0x10),
+    }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")]
     [global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHostRemovedEventArgs))]
     [global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHostRemovedEventArgsRcwFactory]
@@ -568,7 +629,7 @@ namespace Windows.Devices.Midi2.Transports.Network
         private struct InterfaceTag<I>{};
 
 
-        public global::Windows.Devices.Enumeration.DeviceInformationUpdate DeviceInformationUpdate => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostRemovedEventArgsMethods.get_DeviceInformationUpdate(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostRemovedEventArgs);
+        public string FullName => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostRemovedEventArgsMethods.get_FullName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostRemovedEventArgs);
 
         public string HostDeviceId => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostRemovedEventArgsMethods.get_HostDeviceId(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostRemovedEventArgs);
 
@@ -646,9 +707,11 @@ namespace Windows.Devices.Midi2.Transports.Network
         private struct InterfaceTag<I>{};
 
 
-        public global::Windows.Devices.Enumeration.DeviceInformationUpdate DeviceInformationUpdate => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostUpdatedEventArgsMethods.get_DeviceInformationUpdate(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostUpdatedEventArgs);
+        public MidiNetworkAdvertisedHostChangedProperties ChangedProperties => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostUpdatedEventArgsMethods.get_ChangedProperties(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostUpdatedEventArgs);
 
         public string HostDeviceId => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostUpdatedEventArgsMethods.get_HostDeviceId(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostUpdatedEventArgs);
+
+        public MidiNetworkAdvertisedHost UpdatedHost => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostUpdatedEventArgsMethods.get_UpdatedHost(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostUpdatedEventArgs);
 
         private bool IsOverridableInterface(Guid iid) => false;
 
@@ -781,7 +844,7 @@ namespace Windows.Devices.Midi2.Transports.Network
 
         public global::System.Collections.Generic.IReadOnlyDictionary<string, MidiNetworkAdvertisedHost> EnumeratedHosts => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostWatcherMethods.get_EnumeratedHosts(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostWatcher);
 
-        public global::Windows.Devices.Enumeration.DeviceWatcherStatus Status => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostWatcherMethods.get_Status(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostWatcher);
+        public bool IsStarted => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkAdvertisedHostWatcherMethods.get_IsStarted(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkAdvertisedHostWatcher);
 
         private bool IsOverridableInterface(Guid iid) => false;
 
@@ -1619,6 +1682,12 @@ namespace Windows.Devices.Midi2.Transports.Network
 
         public string ActualPort => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_ActualPort(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
 
+        public string ActualServiceInstanceName => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_ActualServiceInstanceName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
+
+        public bool AllowPortFallback => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_AllowPortFallback(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
+
+        public string ConfiguredPort => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_ConfiguredPort(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
+
         public global::System.Collections.Generic.IReadOnlyList<MidiNetworkHostConnection> Connections => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_Connections(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
 
         public bool CreateMidi1Ports => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_CreateMidi1Ports(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
@@ -1635,7 +1704,11 @@ namespace Windows.Devices.Midi2.Transports.Network
 
         public string ServiceInstanceName => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_ServiceInstanceName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
 
+        public bool ServiceInstanceNameWasChanged => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_ServiceInstanceNameWasChanged(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
+
         public string UmpEndpointName => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_UmpEndpointName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
+
+        public bool UsedPortFallback => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkConfiguredHostMethods.get_UsedPortFallback(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkConfiguredHost);
 
         private bool IsOverridableInterface(Guid iid) => false;
 
@@ -1825,6 +1898,10 @@ namespace Windows.Devices.Midi2.Transports.Network
 
         public static string EnsureCompliantServiceInstanceName(string serviceInstanceName) => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationConfigStaticsMethods.EnsureCompliantServiceInstanceName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkHostCreationConfigStatics, serviceInstanceName);
 
+        public static bool IsServiceInstanceNameAvailable(string serviceInstanceName) => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationConfigStaticsMethods.IsServiceInstanceNameAvailable(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkHostCreationConfigStatics, serviceInstanceName);
+
+        public static string MakeUniqueServiceInstanceName(string baseServiceInstanceName) => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationConfigStaticsMethods.MakeUniqueServiceInstanceName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkHostCreationConfigStatics, baseServiceInstanceName);
+
         public static MidiNetworkHostCreationConfig FromAbi(IntPtr thisPtr)
         {
             if (thisPtr == IntPtr.Zero) return null;
@@ -1869,6 +1946,12 @@ namespace Windows.Devices.Midi2.Transports.Network
         {
             get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationConfigMethods.get_Advertise(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkHostCreationConfig);
             set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationConfigMethods.set_Advertise(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkHostCreationConfig, value);
+        }
+
+        public bool AllowPortFallback
+        {
+            get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationConfigMethods.get_AllowPortFallback(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkHostCreationConfig);
+            set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkHostCreationConfigMethods.set_AllowPortFallback(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkHostCreationConfig, value);
         }
 
         public MidiNetworkAuthenticationType AuthenticationType
@@ -1957,18 +2040,13 @@ namespace Windows.Devices.Midi2.Transports.Network
         InvalidOrMissingProductInstanceId = unchecked((int)0x42),
         ProductInstanceIdTooLong = unchecked((int)0x46),
         ServiceInstanceNameInUse = unchecked((int)0x43),
+        ServiceInstanceNameTooLong = unchecked((int)0x4a),
         InvalidNetworkProtocol = unchecked((int)0x44),
         InvalidNetworkPort = unchecked((int)0x48),
         NetworkPortInUse = unchecked((int)0x49),
         InvalidOrMissingCredentialIdentifier = unchecked((int)0x51),
         MalformedCredentialIdentifier = unchecked((int)0x52),
         AuthenticationNotImplemented = unchecked((int)0x53),
-        ForwardErrorCorrectionPacketCountOutOfRange = unchecked((int)0x81),
-        RetransmitBufferSizeOutOfRange = unchecked((int)0x82),
-        PingIntervalOutOfRange = unchecked((int)0x83),
-        MaxHostConnectionsOutOfRange = unchecked((int)0x84),
-        InvitationPendingTimeoutOutOfRange = unchecked((int)0x85),
-        ScanIntervalOutOfRange = unchecked((int)0x86),
         InvalidArgument = unchecked((int)0x11000055),
         ClientApiException = unchecked((int)0x11002011),
         TimedOutWaitingForHostToStart = unchecked((int)0x110005b4),
@@ -3133,21 +3211,213 @@ namespace Windows.Devices.Midi2.Transports.Network
 
         public static global::System.Collections.Generic.IReadOnlyList<MidiNetworkPendingRemoteClient> GetPendingRemoteClients() => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.GetPendingRemoteClients(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
 
+        public static MidiNetworkTransportSettings GetTransportSettings() => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.GetTransportSettings(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
+
         public static global::System.Collections.Generic.IReadOnlyList<MidiNetworkAdvertisedHost> GetAdvertisedHosts() => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.GetAdvertisedHosts(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
+
+        public static ushort GenerateAvailableHostPort() => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.GenerateAvailableHostPort(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
+
+        public static bool IsHostPortAvailable(ushort port) => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.IsHostPortAvailable(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics, port);
 
         public static bool IsTransportAvailable => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_IsTransportAvailable(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
 
         public static string MidiNetworkUdpDnsDomain => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_MidiNetworkUdpDnsDomain(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
 
-        public static global::Windows.Devices.Enumeration.DeviceInformationKind MidiNetworkUdpDnsSdDeviceInformationKind => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_MidiNetworkUdpDnsSdDeviceInformationKind(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
-
-        public static global::System.Collections.Generic.IList<string> MidiNetworkUdpDnsSdQueryAdditionalProperties => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_MidiNetworkUdpDnsSdQueryAdditionalProperties(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
-
-        public static string MidiNetworkUdpDnsSdQueryString => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_MidiNetworkUdpDnsSdQueryString(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
+        public static string MidiNetworkUdpDnsSdQueryName => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_MidiNetworkUdpDnsSdQueryName(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
 
         public static string MidiNetworkUdpDnsServiceType => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_MidiNetworkUdpDnsServiceType(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
 
         public static Guid TransportId => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStaticsMethods.get_TransportId(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportManagerStatics);
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")]
+    [global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings))]
+    [global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettingsRcwFactory]
+    [global::WinRT.ProjectedRuntimeClass(typeof(IMidiNetworkTransportSettings))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiTransportsNetworkApiContract), 65536u)]
+    public sealed class MidiNetworkTransportSettings : global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfig, global::System.Runtime.InteropServices.ICustomQueryInterface, IWinRTObject, IEquatable<MidiNetworkTransportSettings>
+    {
+        private IntPtr ThisPtr => _inner == null ? (((IWinRTObject)this).NativeObject).ThisPtr : _inner.ThisPtr;
+
+        private readonly IObjectReference _inner = null;
+
+
+
+        private IObjectReference _objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings => _inner;
+        private volatile IObjectReference ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig;
+        private IObjectReference Make___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig, ((IWinRTObject)this).NativeObject.As<IUnknownVftbl>(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.IID), null);
+            return ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig;
+        }
+        private IObjectReference _objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig => ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig ?? Make___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig();
+
+
+
+        private static volatile IObjectReference ___objRef_global__Windows_Devices_Midi2_Transports_Network_MidiNetworkTransportSettings;
+        private static IObjectReference _objRef_global__Windows_Devices_Midi2_Transports_Network_MidiNetworkTransportSettings
+        {
+            get
+            { 
+                var factory = ___objRef_global__Windows_Devices_Midi2_Transports_Network_MidiNetworkTransportSettings;
+                if (factory != null && factory.IsInCurrentContext)
+                {
+                    return factory;
+                }
+                else
+                {
+                    return ___objRef_global__Windows_Devices_Midi2_Transports_Network_MidiNetworkTransportSettings = ActivationFactory.Get("Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings");
+                }
+            }
+        }
+
+        public MidiNetworkTransportSettings() 
+        {
+            _inner = global::ABI.WinRT.Interop.IActivationFactoryMethods.ActivateInstanceUnsafe(_objRef_global__Windows_Devices_Midi2_Transports_Network_MidiNetworkTransportSettings, global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.IID);
+            ComWrappersSupport.RegisterObjectForInterface(this, ThisPtr);
+            ComWrappersHelper.Init(_inner, false);
+
+        }
+
+        public static I As<I>() => ActivationFactory.Get("Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings").AsInterface<I>();
+
+        private static volatile IObjectReference ___objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics;
+        private static IObjectReference _objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics
+        {
+            get
+            { 
+                var factory = ___objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics;
+                if (factory != null && factory.IsInCurrentContext)
+                {
+                    return factory;
+                }
+                else
+                {
+                    return ___objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics = ActivationFactory.Get("Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings", global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.IID);
+                }
+            }
+        }
+
+        public static uint MaxDirectConnectionScanIntervalMilliseconds => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MaxDirectConnectionScanIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MaxInvitationPendingTimeoutMilliseconds => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MaxInvitationPendingTimeoutMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MaxMaxForwardErrorCorrectionCommandPackets => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MaxMaxForwardErrorCorrectionCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MaxMaxHostConnections => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MaxMaxHostConnections(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MaxMaxRetransmitBufferCommandPackets => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MaxMaxRetransmitBufferCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MaxOutboundPingIntervalMilliseconds => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MaxOutboundPingIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MinDirectConnectionScanIntervalMilliseconds => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MinDirectConnectionScanIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MinInvitationPendingTimeoutMilliseconds => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MinInvitationPendingTimeoutMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MinMaxForwardErrorCorrectionCommandPackets => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MinMaxForwardErrorCorrectionCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MinMaxHostConnections => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MinMaxHostConnections(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MinMaxRetransmitBufferCommandPackets => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MinMaxRetransmitBufferCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static uint MinOutboundPingIntervalMilliseconds => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStaticsMethods.get_MinOutboundPingIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettingsStatics);
+
+        public static MidiNetworkTransportSettings FromAbi(IntPtr thisPtr)
+        {
+            if (thisPtr == IntPtr.Zero) return null;
+            return MarshalInspectable<MidiNetworkTransportSettings>.FromAbi(thisPtr);
+        }
+
+        internal MidiNetworkTransportSettings(IObjectReference objRef)
+        {
+            _inner = objRef.As(global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.IID);
+
+        }
+
+
+        public static bool operator ==(MidiNetworkTransportSettings x, MidiNetworkTransportSettings y) => (x?.ThisPtr ?? IntPtr.Zero) == (y?.ThisPtr ?? IntPtr.Zero);
+        public static bool operator !=(MidiNetworkTransportSettings x, MidiNetworkTransportSettings y) => !(x == y);
+        public bool Equals(MidiNetworkTransportSettings other) => this == other;
+        public override bool Equals(object obj) => obj is MidiNetworkTransportSettings that && this == that;
+        public override int GetHashCode() => ThisPtr.GetHashCode();
+
+
+        bool IWinRTObject.HasUnwrappableNativeObject => true;
+        IObjectReference IWinRTObject.NativeObject => _inner;
+        private volatile global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> _queryInterfaceCache;
+        private global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> MakeQueryInterfaceCache()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref _queryInterfaceCache, new global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference>(), null); 
+            return _queryInterfaceCache;
+        }
+        global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> IWinRTObject.QueryInterfaceCache => _queryInterfaceCache ?? MakeQueryInterfaceCache();
+        private volatile global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> _additionalTypeData;
+        private global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> MakeAdditionalTypeData()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref _additionalTypeData, new global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object>(), null); 
+            return _additionalTypeData;
+        }
+        global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> IWinRTObject.AdditionalTypeData => _additionalTypeData ?? MakeAdditionalTypeData();
+
+        private struct InterfaceTag<I>{};
+
+
+        public global::Windows.Data.Json.JsonObject ConfigJson => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.get_ConfigJson(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig);
+
+        public uint DirectConnectionScanIntervalMilliseconds
+        {
+            get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.get_DirectConnectionScanIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings);
+            set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.set_DirectConnectionScanIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings, value);
+        }
+
+        public uint InvitationPendingTimeoutMilliseconds
+        {
+            get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.get_InvitationPendingTimeoutMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings);
+            set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.set_InvitationPendingTimeoutMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings, value);
+        }
+
+        public uint MaxForwardErrorCorrectionCommandPackets
+        {
+            get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.get_MaxForwardErrorCorrectionCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings);
+            set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.set_MaxForwardErrorCorrectionCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings, value);
+        }
+
+        public uint MaxHostConnections
+        {
+            get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.get_MaxHostConnections(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings);
+            set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.set_MaxHostConnections(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings, value);
+        }
+
+        public uint MaxRetransmitBufferCommandPackets
+        {
+            get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.get_MaxRetransmitBufferCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings);
+            set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.set_MaxRetransmitBufferCommandPackets(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings, value);
+        }
+
+        public uint OutboundPingIntervalMilliseconds
+        {
+            get => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.get_OutboundPingIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings);
+            set => global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.set_OutboundPingIntervalMilliseconds(_objRef_global__Windows_Devices_Midi2_Transports_Network_IMidiNetworkTransportSettings, value);
+        }
+
+        public Guid TransportId => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.get_TransportId(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig);
+
+        private bool IsOverridableInterface(Guid iid) => false;
+
+        global::System.Runtime.InteropServices.CustomQueryInterfaceResult global::System.Runtime.InteropServices.ICustomQueryInterface.GetInterface(ref Guid iid, out IntPtr ppv)
+        {
+            ppv = IntPtr.Zero;
+            if (IsOverridableInterface(iid) || global::WinRT.Interop.IID.IID_IInspectable == iid)
+            {
+                return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.NotHandled;
+            }
+
+            if (((IWinRTObject)this).NativeObject.TryAs(iid, out ppv) >= 0)
+            {
+                return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.Handled;
+            }
+
+            return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.NotHandled;
+        }
     }
     [global::Windows.Foundation.Metadata.ContractVersion(65536u)]
     public enum MidiTransportsNetworkApiContract
@@ -3253,7 +3523,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[16](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[17](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IVectorView_1_String.EnsureInitialized();
                 return MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.FromAbi(__retval);
@@ -3261,6 +3531,59 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             finally
             {
                 MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::System.Collections.Generic.IReadOnlyList<string> get_IPv4Addresses(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[18](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IVectorView_1_String.EnsureInitialized();
+                return MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::System.Collections.Generic.IReadOnlyList<string> get_IPv6Addresses(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[19](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IVectorView_1_String.EnsureInitialized();
+                return MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::System.DateTimeOffset get_LastSeenTime(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::ABI.System.DateTimeOffset __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, global::ABI.System.DateTimeOffset*, int>**)ThisPtr)[20](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.System.DateTimeOffset.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.System.DateTimeOffset.DisposeAbi(__retval);
             }
         }
 
@@ -3322,6 +3645,24 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             finally
             {
                 MarshalString.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::System.Collections.Generic.IReadOnlyDictionary<string, string> get_TextAttributes(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[16](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IMapView_2_String__String.EnsureInitialized();
+                return MarshalInterface<global::System.Collections.Generic.IReadOnlyDictionary<string, string>>.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInterface<global::System.Collections.Generic.IReadOnlyDictionary<string, string>>.DisposeAbi(__retval);
             }
         }
 
@@ -3399,7 +3740,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
     internal static class IMidiNetworkAdvertisedHostRemovedEventArgsMethods
     {
 
-        internal static unsafe global::Windows.Devices.Enumeration.DeviceInformationUpdate get_DeviceInformationUpdate(IObjectReference _obj)
+        internal static unsafe string get_FullName(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
 
@@ -3408,11 +3749,11 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             {
                 (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
-                return global::ABI.Windows.Devices.Enumeration.DeviceInformationUpdate.FromAbi(__retval);
+                return MarshalString.FromAbi(__retval);
             }
             finally
             {
-                global::ABI.Windows.Devices.Enumeration.DeviceInformationUpdate.DisposeAbi(__retval);
+                MarshalString.DisposeAbi(__retval);
             }
         }
 
@@ -3453,21 +3794,14 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
     internal static class IMidiNetworkAdvertisedHostUpdatedEventArgsMethods
     {
 
-        internal static unsafe global::Windows.Devices.Enumeration.DeviceInformationUpdate get_DeviceInformationUpdate(IObjectReference _obj)
+        internal static unsafe global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHostChangedProperties get_ChangedProperties(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
 
-            IntPtr __retval = default;
-            try
-            {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, &__retval);
-                global::System.GC.KeepAlive(_obj);
-                return global::ABI.Windows.Devices.Enumeration.DeviceInformationUpdate.FromAbi(__retval);
-            }
-            finally
-            {
-                global::ABI.Windows.Devices.Enumeration.DeviceInformationUpdate.DisposeAbi(__retval);
-            }
+            global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHostChangedProperties __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHostChangedProperties*, int>**)ThisPtr)[7](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
         }
 
         internal static unsafe string get_HostDeviceId(IObjectReference _obj)
@@ -3484,6 +3818,23 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             finally
             {
                 MarshalString.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost get_UpdatedHost(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[8](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost.DisposeAbi(__retval);
             }
         }
 
@@ -3541,14 +3892,14 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             }
         }
 
-        internal static unsafe global::Windows.Devices.Enumeration.DeviceWatcherStatus get_Status(IObjectReference _obj)
+        internal static unsafe bool get_IsStarted(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
 
-            global::Windows.Devices.Enumeration.DeviceWatcherStatus __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Enumeration.DeviceWatcherStatus*, int>**)ThisPtr)[9](ThisPtr, &__retval);
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[9](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
-            return __retval;
+            return __retval != 0;
         }
 
 
@@ -4563,6 +4914,50 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             }
         }
 
+        internal static unsafe string get_ActualServiceInstanceName(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[17](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return MarshalString.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalString.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe bool get_AllowPortFallback(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[12](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval != 0;
+        }
+
+        internal static unsafe string get_ConfiguredPort(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[11](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return MarshalString.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalString.DisposeAbi(__retval);
+            }
+        }
+
         internal static unsafe global::System.Collections.Generic.IReadOnlyList<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkHostConnection> get_Connections(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
@@ -4570,7 +4965,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[16](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[21](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IVectorView_1_Windows_Devices_Midi2_Transports_Network_MidiNetworkHostConnection.EnsureInitialized();
                 return MarshalInterface<global::System.Collections.Generic.IReadOnlyList<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkHostConnection>>.FromAbi(__retval);
@@ -4586,7 +4981,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             var ThisPtr = _obj.ThisPtr;
 
             byte __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[14](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[19](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval != 0;
         }
@@ -4628,7 +5023,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[12](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[15](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 return MarshalString.FromAbi(__retval);
             }
@@ -4643,7 +5038,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             var ThisPtr = _obj.ThisPtr;
 
             global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy*, int>**)ThisPtr)[15](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy*, int>**)ThisPtr)[20](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval;
         }
@@ -4655,7 +5050,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[13](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[16](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 return MarshalString.FromAbi(__retval);
             }
@@ -4665,6 +5060,16 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             }
         }
 
+        internal static unsafe bool get_ServiceInstanceNameWasChanged(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[18](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval != 0;
+        }
+
         internal static unsafe string get_UmpEndpointName(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
@@ -4672,7 +5077,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[11](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[14](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 return MarshalString.FromAbi(__retval);
             }
@@ -4680,6 +5085,16 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             {
                 MarshalString.DisposeAbi(__retval);
             }
+        }
+
+        internal static unsafe bool get_UsedPortFallback(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[13](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval != 0;
         }
 
 
@@ -4882,11 +5297,28 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             var ThisPtr = _obj.ThisPtr;
 
             byte __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[19](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[21](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval != 0;
         }
         internal static unsafe void set_Advertise(IObjectReference _obj, bool value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte, int>**)ThisPtr)[22](ThisPtr, (byte)(value ? 1 : 0));
+            global::System.GC.KeepAlive(_obj);
+        }
+
+        internal static unsafe bool get_AllowPortFallback(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[19](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval != 0;
+        }
+        internal static unsafe void set_AllowPortFallback(IObjectReference _obj, bool value)
         {
             var ThisPtr = _obj.ThisPtr;
 
@@ -4899,7 +5331,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             var ThisPtr = _obj.ThisPtr;
 
             global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAuthenticationType __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAuthenticationType*, int>**)ThisPtr)[23](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAuthenticationType*, int>**)ThisPtr)[25](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval;
         }
@@ -4907,7 +5339,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
         {
             var ThisPtr = _obj.ThisPtr;
 
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAuthenticationType, int>**)ThisPtr)[24](ThisPtr, value);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAuthenticationType, int>**)ThisPtr)[26](ThisPtr, value);
             global::System.GC.KeepAlive(_obj);
         }
 
@@ -5027,7 +5459,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             var ThisPtr = _obj.ThisPtr;
 
             global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy*, int>**)ThisPtr)[21](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy*, int>**)ThisPtr)[23](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval;
         }
@@ -5035,7 +5467,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
         {
             var ThisPtr = _obj.ThisPtr;
 
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy, int>**)ThisPtr)[22](ThisPtr, value);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientPolicy, int>**)ThisPtr)[24](ThisPtr, value);
             global::System.GC.KeepAlive(_obj);
         }
 
@@ -5133,6 +5565,41 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
                 fixed(void* ___serviceInstanceName = __serviceInstanceName)
                 {
                     (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, MarshalString.GetAbi(ref __serviceInstanceName), &__retval);
+                    global::System.GC.KeepAlive(_obj);
+                    return MarshalString.FromAbi(__retval);
+                }
+            }
+            finally
+            {
+                MarshalString.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe bool IsServiceInstanceNameAvailable(IObjectReference _obj, string serviceInstanceName)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            MarshalString.Pinnable __serviceInstanceName = new(serviceInstanceName);
+            fixed(void* ___serviceInstanceName = __serviceInstanceName)
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, byte*, int>**)ThisPtr)[8](ThisPtr, MarshalString.GetAbi(ref __serviceInstanceName), &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return __retval != 0;
+            }
+        }
+
+        internal static unsafe string MakeUniqueServiceInstanceName(IObjectReference _obj, string baseServiceInstanceName)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                MarshalString.Pinnable __baseServiceInstanceName = new(baseServiceInstanceName);
+                fixed(void* ___baseServiceInstanceName = __baseServiceInstanceName)
+                {
+                    (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr*, int>**)ThisPtr)[9](ThisPtr, MarshalString.GetAbi(ref __baseServiceInstanceName), &__retval);
                     global::System.GC.KeepAlive(_obj);
                     return MarshalString.FromAbi(__retval);
                 }
@@ -6302,7 +6769,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             }
         }
 
-        internal static unsafe global::System.Collections.Generic.IReadOnlyList<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost> GetAdvertisedHosts(IObjectReference _obj)
+        internal static unsafe global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings GetTransportSettings(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
 
@@ -6311,6 +6778,23 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             {
                 (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[19](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::System.Collections.Generic.IReadOnlyList<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost> GetAdvertisedHosts(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[20](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
                 _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IVectorView_1_Windows_Devices_Midi2_Transports_Network_MidiNetworkAdvertisedHost.EnsureInitialized();
                 return MarshalInterface<global::System.Collections.Generic.IReadOnlyList<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost>>.FromAbi(__retval);
             }
@@ -6318,6 +6802,26 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             {
                 MarshalInterface<global::System.Collections.Generic.IReadOnlyList<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost>>.DisposeAbi(__retval);
             }
+        }
+
+        internal static unsafe ushort GenerateAvailableHostPort(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ushort __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, ushort*, int>**)ThisPtr)[24](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe bool IsHostPortAvailable(IObjectReference _obj, ushort port)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, ushort, byte*, int>**)ThisPtr)[25](ThisPtr, port, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval != 0;
         }
         internal static unsafe bool get_IsTransportAvailable(IObjectReference _obj)
         {
@@ -6346,42 +6850,14 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             }
         }
 
-        internal static unsafe global::Windows.Devices.Enumeration.DeviceInformationKind get_MidiNetworkUdpDnsSdDeviceInformationKind(IObjectReference _obj)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            global::Windows.Devices.Enumeration.DeviceInformationKind __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Enumeration.DeviceInformationKind*, int>**)ThisPtr)[23](ThisPtr, &__retval);
-            global::System.GC.KeepAlive(_obj);
-            return __retval;
-        }
-
-        internal static unsafe global::System.Collections.Generic.IList<string> get_MidiNetworkUdpDnsSdQueryAdditionalProperties(IObjectReference _obj)
+        internal static unsafe string get_MidiNetworkUdpDnsSdQueryName(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
 
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[24](ThisPtr, &__retval);
-                global::System.GC.KeepAlive(_obj);
-                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IVector_1_String.EnsureInitialized();
-                return MarshalInterface<global::System.Collections.Generic.IList<string>>.FromAbi(__retval);
-            }
-            finally
-            {
-                MarshalInterface<global::System.Collections.Generic.IList<string>>.DisposeAbi(__retval);
-            }
-        }
-
-        internal static unsafe string get_MidiNetworkUdpDnsSdQueryString(IObjectReference _obj)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            IntPtr __retval = default;
-            try
-            {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[21](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[23](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 return MarshalString.FromAbi(__retval);
             }
@@ -6398,7 +6874,7 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[20](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[21](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 return MarshalString.FromAbi(__retval);
             }
@@ -6433,6 +6909,268 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
     }
     [Guid("8087B303-0519-C0DE-31D1-EE00F0301000")]
     internal interface IMidiNetworkTransportManagerStatics : global::Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportManagerStatics
+    {
+    }
+    internal static class IMidiNetworkTransportSettingsMethods
+    {
+
+        internal static unsafe uint get_DirectConnectionScanIntervalMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[16](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+        internal static unsafe void set_DirectConnectionScanIntervalMilliseconds(IObjectReference _obj, uint value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int>**)ThisPtr)[17](ThisPtr, value));
+            global::System.GC.KeepAlive(_obj);
+        }
+
+        internal static unsafe uint get_InvitationPendingTimeoutMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[12](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+        internal static unsafe void set_InvitationPendingTimeoutMilliseconds(IObjectReference _obj, uint value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int>**)ThisPtr)[13](ThisPtr, value));
+            global::System.GC.KeepAlive(_obj);
+        }
+
+        internal static unsafe uint get_MaxForwardErrorCorrectionCommandPackets(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+        internal static unsafe void set_MaxForwardErrorCorrectionCommandPackets(IObjectReference _obj, uint value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int>**)ThisPtr)[7](ThisPtr, value));
+            global::System.GC.KeepAlive(_obj);
+        }
+
+        internal static unsafe uint get_MaxHostConnections(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[14](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+        internal static unsafe void set_MaxHostConnections(IObjectReference _obj, uint value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int>**)ThisPtr)[15](ThisPtr, value));
+            global::System.GC.KeepAlive(_obj);
+        }
+
+        internal static unsafe uint get_MaxRetransmitBufferCommandPackets(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[8](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+        internal static unsafe void set_MaxRetransmitBufferCommandPackets(IObjectReference _obj, uint value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int>**)ThisPtr)[9](ThisPtr, value));
+            global::System.GC.KeepAlive(_obj);
+        }
+
+        internal static unsafe uint get_OutboundPingIntervalMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[10](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+        internal static unsafe void set_OutboundPingIntervalMilliseconds(IObjectReference _obj, uint value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int>**)ThisPtr)[11](ThisPtr, value));
+            global::System.GC.KeepAlive(_obj);
+        }
+
+
+
+        public static ref readonly global::System.Guid IID
+        {
+            [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xDD, 0x0, 0xF0, 0x31, 0x90, 0x0 };
+                return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
+            }
+        }
+
+    }
+    [Guid("8087B303-0519-C0DE-31D1-DD00F0319000")]
+    internal interface IMidiNetworkTransportSettings : global::Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettings
+    {
+    }
+    internal static class IMidiNetworkTransportSettingsStaticsMethods
+    {
+
+        internal static unsafe uint get_MaxDirectConnectionScanIntervalMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[17](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MaxInvitationPendingTimeoutMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[13](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MaxMaxForwardErrorCorrectionCommandPackets(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[7](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MaxMaxHostConnections(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[15](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MaxMaxRetransmitBufferCommandPackets(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[9](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MaxOutboundPingIntervalMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[11](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MinDirectConnectionScanIntervalMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[16](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MinInvitationPendingTimeoutMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[12](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MinMaxForwardErrorCorrectionCommandPackets(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MinMaxHostConnections(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[14](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MinMaxRetransmitBufferCommandPackets(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[8](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe uint get_MinOutboundPingIntervalMilliseconds(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            uint __retval = default;
+            global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint*, int>**)ThisPtr)[10](ThisPtr, &__retval));
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+
+
+        public static ref readonly global::System.Guid IID
+        {
+            [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xEE, 0x0, 0xF0, 0x31, 0x90, 0x0 };
+                return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
+            }
+        }
+
+    }
+    [Guid("8087B303-0519-C0DE-31D1-EE00F0319000")]
+    internal interface IMidiNetworkTransportSettingsStatics : global::Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsStatics
     {
     }
     [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
@@ -7009,6 +7747,31 @@ namespace ABI.Windows.Devices.Midi2.Transports.Network
     {
         public override object CreateInstance(global::WinRT.IInspectable inspectable)
             => new global::Windows.Devices.Midi2.Transports.Network.MidiNetworkRemoteClientDisconnectResponse(inspectable.ObjRef);
+    }
+    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+    public struct MidiNetworkTransportSettings
+    {
+
+        public static IObjectReference CreateMarshaler(global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings obj) => obj is null ? null : MarshalInspectable<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.CreateMarshaler<IUnknownVftbl>(obj, global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.IID);
+        public static ObjectReferenceValue CreateMarshaler2(global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings obj) => MarshalInspectable<object>.CreateMarshaler2(obj, global::ABI.Windows.Devices.Midi2.Transports.Network.IMidiNetworkTransportSettingsMethods.IID);
+        public static IntPtr GetAbi(IObjectReference value) => value is null ? IntPtr.Zero : MarshalInterfaceHelper<object>.GetAbi(value);
+        public static global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings FromAbi(IntPtr thisPtr) => global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings.FromAbi(thisPtr);
+        public static IntPtr FromManaged(global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings obj) => obj is null ? IntPtr.Zero : CreateMarshaler2(obj).Detach();
+        public static unsafe MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.MarshalerArray CreateMarshalerArray(global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings[] array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.CreateMarshalerArray2(array, (o) => CreateMarshaler2(o));
+        public static (int length, IntPtr data) GetAbiArray(object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.GetAbiArray(box);
+        public static unsafe global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings[] FromAbiArray(object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.FromAbiArray(box, FromAbi);
+        public static void CopyAbiArray(global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings[] array, object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.CopyAbiArray(array, box, FromAbi);
+        public static (int length, IntPtr data) FromManagedArray(global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings[] array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.FromManagedArray(array, (o) => FromManaged(o));
+        public static void DisposeMarshaler(IObjectReference value) => MarshalInspectable<object>.DisposeMarshaler(value);
+        public static void DisposeMarshalerArray(MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.MarshalerArray array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings>.DisposeMarshalerArray(array);
+        public static void DisposeAbi(IntPtr abi) => MarshalInspectable<object>.DisposeAbi(abi);
+        public static unsafe void DisposeAbiArray(object box) => MarshalInspectable<object>.DisposeAbiArray(box);
+    }
+    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+    internal sealed class MidiNetworkTransportSettingsRcwFactoryAttribute : global::WinRT.WinRTImplementationTypeRcwFactoryAttribute
+    {
+        public override object CreateInstance(global::WinRT.IInspectable inspectable)
+            => new global::Windows.Devices.Midi2.Transports.Network.MidiNetworkTransportSettings(inspectable.ObjRef);
     }
 }
 #pragma warning restore CA1416

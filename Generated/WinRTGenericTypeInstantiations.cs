@@ -1404,6 +1404,76 @@ namespace WinRT.GenericTypeInstantiations
         }
     }
 
+    internal static class Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceConnectResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse GetResults(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[8](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse> get_Completed(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceConnectResponse.EnsureInitialized();
+                return global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse>.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse>.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe void put_Completed(IObjectReference _obj, global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse> value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            try
+            {
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceConnectResponse.EnsureInitialized();
+                __value = global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse>.CreateMarshaler2(value);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[6](ThisPtr, MarshalInspectable<object>.GetAbi(__value)));
+                global::System.GC.KeepAlive(_obj);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.Windows.Foundation.IAsyncOperationMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse, IntPtr>.InitRcwHelper(&put_Completed,
+            &get_Completed,
+            &GetResults);
+
+            return true;
+        }
+    }
+
     internal static class Windows_Foundation_TypedEventHandler_2_Windows_Devices_Midi2_Enumeration_MidiEndpointDeviceWatcher__object
     {
         private static bool Initialized { get; } = Init();
@@ -1744,6 +1814,76 @@ namespace WinRT.GenericTypeInstantiations
             &IndexOf,
             &GetMany);
             _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_Network_MidiNetworkConfiguredHost.EnsureInitialized();
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse GetResults(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[8](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse> get_Completed(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralResponse.EnsureInitialized();
+                return global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse>.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse>.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe void put_Completed(IObjectReference _obj, global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse> value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            try
+            {
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralResponse.EnsureInitialized();
+                __value = global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse>.CreateMarshaler2(value);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[6](ThisPtr, MarshalInspectable<object>.GetAbi(__value)));
+                global::System.GC.KeepAlive(_obj);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.Windows.Foundation.IAsyncOperationMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse, IntPtr>.InitRcwHelper(&put_Completed,
+            &get_Completed,
+            &GetResults);
+
             return true;
         }
     }
@@ -2119,6 +2259,156 @@ namespace WinRT.GenericTypeInstantiations
             &get_Completed,
             &GetResults);
 
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceDisconnectResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse GetResults(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[8](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse> get_Completed(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceDisconnectResponse.EnsureInitialized();
+                return global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse>.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse>.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe void put_Completed(IObjectReference _obj, global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse> value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            try
+            {
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceDisconnectResponse.EnsureInitialized();
+                __value = global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse>.CreateMarshaler2(value);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[6](ThisPtr, MarshalInspectable<object>.GetAbi(__value)));
+                global::System.GC.KeepAlive(_obj);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.Windows.Foundation.IAsyncOperationMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse, IntPtr>.InitRcwHelper(&put_Completed,
+            &get_Completed,
+            &GetResults);
+
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_Collections_IVectorView_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceInformation
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation GetAt(IObjectReference _obj, uint index)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, IntPtr*, int>**)ThisPtr)[6](ThisPtr, index, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.DisposeAbi(__retval);
+            }
+        }
+
+        private static unsafe bool IndexOf(IObjectReference _obj, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation value, out uint index)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            uint __index = default;
+            byte __retval = default;
+            try
+            {
+                __value = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.CreateMarshaler2(value);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, uint*, byte*, int>**)ThisPtr)[8](ThisPtr, MarshalInspectable<object>.GetAbi(__value), &__index, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                index = __index;
+                return __retval != 0;
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+        private static unsafe uint GetMany(IObjectReference _obj, uint startIndex, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation[] items)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation>.MarshalerArray __items = default;
+            int __items_length = default;
+            IntPtr __items_data = default;
+            uint __retval = default;
+            try
+            {
+                __items = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.CreateMarshalerArray(items);
+                (__items_length, __items_data) = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.GetAbiArray(__items);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int, IntPtr, uint*, int>**)ThisPtr)[9](ThisPtr, startIndex, __items_length, __items_data, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.CopyAbiArray(items, (__items_length, __items_data));
+                return __retval;
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.DisposeMarshalerArray(__items);
+            }
+        }
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IReadOnlyListMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation, IntPtr>.InitRcwHelper(&GetAt,
+            &IndexOf,
+            &GetMany);
+            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceInformation.EnsureInitialized();
             return true;
         }
     }
@@ -3054,6 +3344,86 @@ namespace WinRT.GenericTypeInstantiations
         }
     }
 
+    internal static class Windows_Foundation_Collections_IVectorView_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClient
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient GetAt(IObjectReference _obj, uint index)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, IntPtr*, int>**)ThisPtr)[6](ThisPtr, index, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.DisposeAbi(__retval);
+            }
+        }
+
+        private static unsafe bool IndexOf(IObjectReference _obj, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient value, out uint index)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            uint __index = default;
+            byte __retval = default;
+            try
+            {
+                __value = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.CreateMarshaler2(value);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, uint*, byte*, int>**)ThisPtr)[8](ThisPtr, MarshalInspectable<object>.GetAbi(__value), &__index, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                index = __index;
+                return __retval != 0;
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+        private static unsafe uint GetMany(IObjectReference _obj, uint startIndex, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient[] items)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient>.MarshalerArray __items = default;
+            int __items_length = default;
+            IntPtr __items_data = default;
+            uint __retval = default;
+            try
+            {
+                __items = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.CreateMarshalerArray(items);
+                (__items_length, __items_data) = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.GetAbiArray(__items);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int, IntPtr, uint*, int>**)ThisPtr)[9](ThisPtr, startIndex, __items_length, __items_data, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.CopyAbiArray(items, (__items_length, __items_data));
+                return __retval;
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.DisposeMarshalerArray(__items);
+            }
+        }
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IReadOnlyListMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient, IntPtr>.InitRcwHelper(&GetAt,
+            &IndexOf,
+            &GetMany);
+            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClient.EnsureInitialized();
+            return true;
+        }
+    }
+
     internal static class Windows_Foundation_TypedEventHandler_2_Windows_Devices_Midi2_Enumeration_Legacy_MidiLegacyPortDeviceWatcher__Windows_Devices_Midi2_Enumeration_Legacy_MidiLegacyPortDeviceInformationUpdatedEventArgs
     {
         private static bool Initialized { get; } = Init();
@@ -3941,160 +4311,6 @@ namespace WinRT.GenericTypeInstantiations
         }
     }
 
-    internal static class Windows_Foundation_Collections_IVector_1_String
-    {
-        private static bool Initialized { get; } = Init();
-
-        public static bool EnsureInitialized() => Initialized;
-
-
-        private static unsafe string GetAt(IObjectReference _obj, uint index)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            IntPtr __retval = default;
-            try
-            {
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, IntPtr*, int>**)ThisPtr)[6](ThisPtr, index, &__retval));
-                global::System.GC.KeepAlive(_obj);
-                return MarshalString.FromAbi(__retval);
-            }
-            finally
-            {
-                MarshalString.DisposeAbi(__retval);
-            }
-        }
-
-        private static unsafe global::System.Collections.Generic.IReadOnlyList<string> GetView(IObjectReference _obj)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            IntPtr __retval = default;
-            try
-            {
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[8](ThisPtr, &__retval));
-                global::System.GC.KeepAlive(_obj);
-                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IVectorView_1_String.EnsureInitialized();
-                return MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.FromAbi(__retval);
-            }
-            finally
-            {
-                MarshalInterface<global::System.Collections.Generic.IReadOnlyList<string>>.DisposeAbi(__retval);
-            }
-        }
-
-        private static unsafe bool IndexOf(IObjectReference _obj, string value, out uint index)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            uint __index = default;
-            byte __retval = default;
-            MarshalString.Pinnable __value = new(value);
-            fixed(void* ___value = __value)
-            {
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, uint*, byte*, int>**)ThisPtr)[9](ThisPtr, MarshalString.GetAbi(ref __value), &__index, &__retval));
-                global::System.GC.KeepAlive(_obj);
-                index = __index;
-                return __retval != 0;
-            }
-        }
-
-        private static unsafe void SetAt(IObjectReference _obj, uint index, string value)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            MarshalString.Pinnable __value = new(value);
-            fixed(void* ___value = __value)
-            {
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, IntPtr, int>**)ThisPtr)[10](ThisPtr, index, MarshalString.GetAbi(ref __value)));
-                global::System.GC.KeepAlive(_obj);
-            }
-        }
-
-        private static unsafe void InsertAt(IObjectReference _obj, uint index, string value)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            MarshalString.Pinnable __value = new(value);
-            fixed(void* ___value = __value)
-            {
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, IntPtr, int>**)ThisPtr)[11](ThisPtr, index, MarshalString.GetAbi(ref __value)));
-                global::System.GC.KeepAlive(_obj);
-            }
-        }
-
-        private static unsafe void Append(IObjectReference _obj, string value)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            MarshalString.Pinnable __value = new(value);
-            fixed(void* ___value = __value)
-            {
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[13](ThisPtr, MarshalString.GetAbi(ref __value)));
-                global::System.GC.KeepAlive(_obj);
-            }
-        }
-
-        private static unsafe uint GetMany(IObjectReference _obj, uint startIndex, string[] items)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            MarshalString.MarshalerArray __items = default;
-            int __items_length = default;
-            IntPtr __items_data = default;
-            uint __retval = default;
-            try
-            {
-                __items = MarshalString.CreateMarshalerArray(items);
-                (__items_length, __items_data) = MarshalString.GetAbiArray(__items);
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int, IntPtr, uint*, int>**)ThisPtr)[16](ThisPtr, startIndex, __items_length, __items_data, &__retval));
-                global::System.GC.KeepAlive(_obj);
-                MarshalString.CopyAbiArray(items, (__items_length, __items_data));
-                return __retval;
-            }
-            finally
-            {
-                MarshalString.DisposeMarshalerArray(__items);
-            }
-        }
-
-        private static unsafe void ReplaceAll(IObjectReference _obj, string[] items)
-        {
-            var ThisPtr = _obj.ThisPtr;
-
-            MarshalString.MarshalerArray __items = default;
-            int __items_length = default;
-            IntPtr __items_data = default;
-            try
-            {
-                __items = MarshalString.CreateMarshalerArray(items);
-                (__items_length, __items_data) = MarshalString.GetAbiArray(__items);
-                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, int, IntPtr, int>**)ThisPtr)[17](ThisPtr, __items_length, __items_data));
-                global::System.GC.KeepAlive(_obj);
-            }
-            finally
-            {
-                MarshalString.DisposeMarshalerArray(__items);
-            }
-        }
-
-
-
-        private unsafe static bool Init()
-        {
-            global::ABI.System.Collections.Generic.IListMethods<string, IntPtr>.InitRcwHelper(&GetAt,
-            &GetView,
-            &IndexOf,
-            &SetAt,
-            &InsertAt,
-            &Append,
-            &GetMany,
-            &ReplaceAll);
-            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterable_1_String.EnsureInitialized();
-            return true;
-        }
-    }
-
     internal static class Windows_Foundation_TypedEventHandler_2_Windows_Devices_Midi2_Enumeration_Legacy_MidiLegacyPortDeviceWatcher__object
     {
         private static bool Initialized { get; } = Init();
@@ -4441,6 +4657,86 @@ namespace WinRT.GenericTypeInstantiations
             &HasKey,
             &Split);
             _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterable_1_Windows_Foundation_Collections_IKeyValuePair_2_Byte__Windows_Devices_Midi2_Enumeration_MidiFunctionBlock_.EnsureInitialized();
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_Collections_IVectorView_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothRememberedClient
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient GetAt(IObjectReference _obj, uint index)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, IntPtr*, int>**)ThisPtr)[6](ThisPtr, index, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.DisposeAbi(__retval);
+            }
+        }
+
+        private static unsafe bool IndexOf(IObjectReference _obj, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient value, out uint index)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            uint __index = default;
+            byte __retval = default;
+            try
+            {
+                __value = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.CreateMarshaler2(value);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, uint*, byte*, int>**)ThisPtr)[8](ThisPtr, MarshalInspectable<object>.GetAbi(__value), &__index, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                index = __index;
+                return __retval != 0;
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+        private static unsafe uint GetMany(IObjectReference _obj, uint startIndex, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient[] items)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient>.MarshalerArray __items = default;
+            int __items_length = default;
+            IntPtr __items_data = default;
+            uint __retval = default;
+            try
+            {
+                __items = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.CreateMarshalerArray(items);
+                (__items_length, __items_data) = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.GetAbiArray(__items);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, uint, int, IntPtr, uint*, int>**)ThisPtr)[9](ThisPtr, startIndex, __items_length, __items_data, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.CopyAbiArray(items, (__items_length, __items_data));
+                return __retval;
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.DisposeMarshalerArray(__items);
+            }
+        }
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IReadOnlyListMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient, IntPtr>.InitRcwHelper(&GetAt,
+            &IndexOf,
+            &GetMany);
+            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothRememberedClient.EnsureInitialized();
             return true;
         }
     }
@@ -4999,6 +5295,76 @@ namespace WinRT.GenericTypeInstantiations
         }
     }
 
+    internal static class Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClientDecisionResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse GetResults(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[8](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse> get_Completed(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClientDecisionResponse.EnsureInitialized();
+                return global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse>.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse>.DisposeAbi(__retval);
+            }
+        }
+        private static unsafe void put_Completed(IObjectReference _obj, global::Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse> value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            try
+            {
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClientDecisionResponse.EnsureInitialized();
+                __value = global::ABI.Windows.Foundation.AsyncOperationCompletedHandler<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse>.CreateMarshaler2(value);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[6](ThisPtr, MarshalInspectable<object>.GetAbi(__value)));
+                global::System.GC.KeepAlive(_obj);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.Windows.Foundation.IAsyncOperationMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse, IntPtr>.InitRcwHelper(&put_Completed,
+            &get_Completed,
+            &GetResults);
+
+            return true;
+        }
+    }
+
     internal static class Windows_Foundation_Collections_IMapView_2_String__Windows_Devices_Midi2_Enumeration_Legacy_MidiLegacyPortDeviceInformation
     {
         private static bool Initialized { get; } = Init();
@@ -5104,6 +5470,43 @@ namespace WinRT.GenericTypeInstantiations
         private unsafe static bool Init()
         {
             global::ABI.System.Collections.Generic.IEnumerableMethods<global::System.Collections.Generic.KeyValuePair<string, global::Windows.Devices.Midi2.Transports.Network.MidiNetworkAdvertisedHost>, IntPtr>.InitRcwHelper(&First);
+
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe int Do_Abi_Invoke(IntPtr thisPtr, IntPtr asyncInfo, global::Windows.Foundation.AsyncStatus asyncStatus)
+        {
+            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralResponse.EnsureInitialized();
+
+
+
+            try
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse, IntPtr>.Abi_Invoke(thisPtr, MarshalInterface<global::Windows.Foundation.IAsyncOperation<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse>>.FromAbi(asyncInfo), asyncStatus);
+
+            }
+            catch (Exception __exception__)
+            {
+                global::WinRT.ExceptionHelpers.SetErrorInfo(__exception__);
+                return global::WinRT.ExceptionHelpers.GetHRForException(__exception__);
+            }
+            return 0;
+        }
+
+
+        private unsafe static bool Init()
+        {
+
+            global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralResponse, IntPtr>.InitCcw(&Do_Abi_Invoke);
 
             return true;
         }
@@ -5222,6 +5625,43 @@ namespace WinRT.GenericTypeInstantiations
             &IndexOf,
             &GetMany);
             _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_IMidiUniversalPacket.EnsureInitialized();
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceDisconnectResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe int Do_Abi_Invoke(IntPtr thisPtr, IntPtr asyncInfo, global::Windows.Foundation.AsyncStatus asyncStatus)
+        {
+            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceDisconnectResponse.EnsureInitialized();
+
+
+
+            try
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse, IntPtr>.Abi_Invoke(thisPtr, MarshalInterface<global::Windows.Foundation.IAsyncOperation<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse>>.FromAbi(asyncInfo), asyncStatus);
+
+            }
+            catch (Exception __exception__)
+            {
+                global::WinRT.ExceptionHelpers.SetErrorInfo(__exception__);
+                return global::WinRT.ExceptionHelpers.GetHRForException(__exception__);
+            }
+            return 0;
+        }
+
+
+        private unsafe static bool Init()
+        {
+
+            global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceDisconnectResponse, IntPtr>.InitCcw(&Do_Abi_Invoke);
+
             return true;
         }
     }
@@ -5569,6 +6009,40 @@ namespace WinRT.GenericTypeInstantiations
         }
     }
 
+    internal static class Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceInformation
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation> First(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterator_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceInformation.EnsureInitialized();
+                return MarshalInterface<global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation>>.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInterface<global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation>>.DisposeAbi(__retval);
+            }
+        }
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IEnumerableMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation, IntPtr>.InitRcwHelper(&First);
+
+            return true;
+        }
+    }
+
     internal static class Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_BasicLoopback_MidiBasicLoopbackEntry
     {
         private static bool Initialized { get; } = Init();
@@ -5729,6 +6203,43 @@ namespace WinRT.GenericTypeInstantiations
         private unsafe static bool Init()
         {
             global::ABI.System.Collections.Generic.IEnumerableMethods<string, IntPtr>.InitRcwHelper(&First);
+
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceConnectResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe int Do_Abi_Invoke(IntPtr thisPtr, IntPtr asyncInfo, global::Windows.Foundation.AsyncStatus asyncStatus)
+        {
+            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceConnectResponse.EnsureInitialized();
+
+
+
+            try
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse, IntPtr>.Abi_Invoke(thisPtr, MarshalInterface<global::Windows.Foundation.IAsyncOperation<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse>>.FromAbi(asyncInfo), asyncStatus);
+
+            }
+            catch (Exception __exception__)
+            {
+                global::WinRT.ExceptionHelpers.SetErrorInfo(__exception__);
+                return global::WinRT.ExceptionHelpers.GetHRForException(__exception__);
+            }
+            return 0;
+        }
+
+
+        private unsafe static bool Init()
+        {
+
+            global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceConnectResponse, IntPtr>.InitCcw(&Do_Abi_Invoke);
 
             return true;
         }
@@ -6121,6 +6632,40 @@ namespace WinRT.GenericTypeInstantiations
         private unsafe static bool Init()
         {
             global::ABI.System.Collections.Generic.IEnumerableMethods<global::Windows.Devices.Midi2.Diagnostics.MidiServicePingResponse, IntPtr>.InitRcwHelper(&First);
+
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClient
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient> First(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterator_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClient.EnsureInitialized();
+                return MarshalInterface<global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient>>.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInterface<global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient>>.DisposeAbi(__retval);
+            }
+        }
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IEnumerableMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient, IntPtr>.InitRcwHelper(&First);
 
             return true;
         }
@@ -6591,6 +7136,43 @@ namespace WinRT.GenericTypeInstantiations
         }
     }
 
+    internal static class Windows_Foundation_AsyncOperationCompletedHandler_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClientDecisionResponse
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
+        private static unsafe int Do_Abi_Invoke(IntPtr thisPtr, IntPtr asyncInfo, global::Windows.Foundation.AsyncStatus asyncStatus)
+        {
+            _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_IAsyncOperation_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClientDecisionResponse.EnsureInitialized();
+
+
+
+            try
+            {
+                global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse, IntPtr>.Abi_Invoke(thisPtr, MarshalInterface<global::Windows.Foundation.IAsyncOperation<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse>>.FromAbi(asyncInfo), asyncStatus);
+
+            }
+            catch (Exception __exception__)
+            {
+                global::WinRT.ExceptionHelpers.SetErrorInfo(__exception__);
+                return global::WinRT.ExceptionHelpers.GetHRForException(__exception__);
+            }
+            return 0;
+        }
+
+
+        private unsafe static bool Init()
+        {
+
+            global::ABI.Windows.Foundation.AsyncOperationCompletedHandlerMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClientDecisionResponse, IntPtr>.InitCcw(&Do_Abi_Invoke);
+
+            return true;
+        }
+    }
+
     internal static class Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Enumeration_Midi1PortNameTableEntry
     {
         private static bool Initialized { get; } = Init();
@@ -6745,6 +7327,40 @@ namespace WinRT.GenericTypeInstantiations
         {
             global::ABI.Windows.Foundation.AsyncOperationProgressHandlerMethods<bool, byte, global::Windows.Devices.Midi2.Utilities.SysExTransfer.MidiSystemExclusiveSendProgress, IntPtr>.InitRcwHelper(&Invoke);
             global::ABI.Windows.Foundation.AsyncOperationProgressHandlerMethods<bool, byte, global::Windows.Devices.Midi2.Utilities.SysExTransfer.MidiSystemExclusiveSendProgress, IntPtr>.InitCcw(&Do_Abi_Invoke);
+
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_Collections_IIterable_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothRememberedClient
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient> First(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IIterator_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothRememberedClient.EnsureInitialized();
+                return MarshalInterface<global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient>>.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInterface<global::System.Collections.Generic.IEnumerator<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient>>.DisposeAbi(__retval);
+            }
+        }
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IEnumerableMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient, IntPtr>.InitRcwHelper(&First);
 
             return true;
         }
@@ -7603,6 +8219,64 @@ namespace WinRT.GenericTypeInstantiations
         }
     }
 
+    internal static class Windows_Foundation_Collections_IIterator_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothDeviceInformation
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe uint GetMany(IObjectReference _obj, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation[] items)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation>.MarshalerArray __items = default;
+            int __items_length = default;
+            IntPtr __items_data = default;
+            uint __retval = default;
+            try
+            {
+                __items = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.CreateMarshalerArray(items);
+                (__items_length, __items_data) = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.GetAbiArray(__items);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, int, IntPtr, uint*, int>**)ThisPtr)[9](ThisPtr, __items_length, __items_data, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.CopyAbiArray(items, (__items_length, __items_data));
+                return __retval;
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.DisposeMarshalerArray(__items);
+            }
+        }
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation get_Current(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation.DisposeAbi(__retval);
+            }
+        }
+
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IEnumeratorMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothDeviceInformation, IntPtr>.InitRcwHelper(&get_Current,
+            &GetMany);
+
+            return true;
+        }
+    }
+
     internal static class Windows_Foundation_Collections_IIterator_1_Windows_Devices_Midi2_Transports_BasicLoopback_MidiBasicLoopbackEntry
     {
         private static bool Initialized { get; } = Init();
@@ -7939,6 +8613,64 @@ namespace WinRT.GenericTypeInstantiations
         private unsafe static bool Init()
         {
             global::ABI.System.Collections.Generic.IEnumeratorMethods<global::Windows.Devices.Midi2.Reporting.MidiServiceTransportPluginInfo, IntPtr>.InitRcwHelper(&get_Current,
+            &GetMany);
+
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_Collections_IIterator_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothPeripheralClient
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe uint GetMany(IObjectReference _obj, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient[] items)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient>.MarshalerArray __items = default;
+            int __items_length = default;
+            IntPtr __items_data = default;
+            uint __retval = default;
+            try
+            {
+                __items = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.CreateMarshalerArray(items);
+                (__items_length, __items_data) = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.GetAbiArray(__items);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, int, IntPtr, uint*, int>**)ThisPtr)[9](ThisPtr, __items_length, __items_data, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.CopyAbiArray(items, (__items_length, __items_data));
+                return __retval;
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.DisposeMarshalerArray(__items);
+            }
+        }
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient get_Current(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient.DisposeAbi(__retval);
+            }
+        }
+
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IEnumeratorMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothPeripheralClient, IntPtr>.InitRcwHelper(&get_Current,
             &GetMany);
 
             return true;
@@ -8622,6 +9354,64 @@ namespace WinRT.GenericTypeInstantiations
         private unsafe static bool Init()
         {
             global::ABI.System.Collections.Generic.IEnumeratorMethods<global::Windows.Devices.Midi2.Enumeration.MidiFunctionBlock, IntPtr>.InitRcwHelper(&get_Current,
+            &GetMany);
+
+            return true;
+        }
+    }
+
+    internal static class Windows_Foundation_Collections_IIterator_1_Windows_Devices_Midi2_Transports_Bluetooth_MidiBluetoothRememberedClient
+    {
+        private static bool Initialized { get; } = Init();
+
+        public static bool EnsureInitialized() => Initialized;
+
+
+        private static unsafe uint GetMany(IObjectReference _obj, global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient[] items)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            MarshalInterfaceHelper<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient>.MarshalerArray __items = default;
+            int __items_length = default;
+            IntPtr __items_data = default;
+            uint __retval = default;
+            try
+            {
+                __items = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.CreateMarshalerArray(items);
+                (__items_length, __items_data) = global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.GetAbiArray(__items);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, int, IntPtr, uint*, int>**)ThisPtr)[9](ThisPtr, __items_length, __items_data, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.CopyAbiArray(items, (__items_length, __items_data));
+                return __retval;
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.DisposeMarshalerArray(__items);
+            }
+        }
+        private static unsafe global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient get_Current(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[6](ThisPtr, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient.DisposeAbi(__retval);
+            }
+        }
+
+
+
+
+        private unsafe static bool Init()
+        {
+            global::ABI.System.Collections.Generic.IEnumeratorMethods<global::Windows.Devices.Midi2.Transports.Bluetooth.MidiBluetoothRememberedClient, IntPtr>.InitRcwHelper(&get_Current,
             &GetMany);
 
             return true;

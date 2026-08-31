@@ -51,7 +51,7 @@ namespace Windows.Devices.Midi2.ServiceConfig
         MidiServiceConfigEndpointMatchCriteria FromJson(string matchObjectJson);
         string MatchObjectKey { get; }
     }
-    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-EE0060007000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigResponse))]
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD0060007000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigResponse))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
     internal interface IMidiServiceConfigResponse
     {
@@ -60,12 +60,23 @@ namespace Windows.Devices.Midi2.ServiceConfig
         string ServiceErrorMessage { get; }
         MidiServiceConfigResponseStatus Status { get; }
     }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD0060008000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponse))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
+    internal interface IMidiServiceConfigSaveResponse
+    {
+        string BackupFilePath { get; }
+        string ConfigFilePath { get; }
+        string ErrorMessage { get; }
+        MidiServiceConfigSaveResult Result { get; }
+        bool Success { get; }
+    }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD0060002000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationConfig))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
     internal interface IMidiServiceEndpointCustomizationConfig
     {
         void AddMidi1SourcePortCustomName(global::Windows.Devices.Midi2.MidiGroup group, string name);
         void AddMidi1DestinationPortCustomName(global::Windows.Devices.Midi2.MidiGroup group, string name);
+        bool ClearDisplayProperties { get; set; }
         string Description { get; set; }
         string ImageFileName { get; set; }
         MidiServiceConfigEndpointMatchCriteria MatchCriteria { get; set; }
@@ -84,6 +95,19 @@ namespace Windows.Devices.Midi2.ServiceConfig
         MidiServiceEndpointCustomizationConfig CreateInstance2(Guid transportId, string name, string description);
         MidiServiceEndpointCustomizationConfig CreateInstance3(Guid transportId, string name, string description, string imageFileName);
         MidiServiceEndpointCustomizationConfig CreateInstance4(Guid transportId, string name, string description, string imageFileName, bool requiresNoteOffTranslation, bool supportsMidiPolyphonicExpression, ushort recommendedControlChangeIntervalMilliseconds);
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD0060009000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfig))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
+    internal interface IMidiServiceEndpointCustomizationRemovalConfig
+    {
+        MidiServiceConfigEndpointMatchCriteria MatchCriteria { get; set; }
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-FF0060009000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigFactory))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
+    internal interface IMidiServiceEndpointCustomizationRemovalConfigFactory
+    {
+        MidiServiceEndpointCustomizationRemovalConfig CreateInstance(Guid transportId);
+        MidiServiceEndpointCustomizationRemovalConfig CreateInstance2(Guid transportId, MidiServiceConfigEndpointMatchCriteria matchCriteria);
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][Guid("8087B303-0519-C0DE-31D1-DD0060003000")][global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportCommand))]
     [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
@@ -126,8 +150,13 @@ namespace Windows.Devices.Midi2.ServiceConfig
         [global::Windows.Foundation.Metadata.Overload(@"SendUpdate2")]
         MidiServiceConfigResponse SendUpdate(Guid transportId, global::Windows.Data.Json.JsonObject fullConfigObject);
         MidiServiceConfigResponse SendCommand(MidiServiceTransportCommand command);
+        [global::Windows.Foundation.Metadata.Overload(@"SaveUpdate")]
+        MidiServiceConfigSaveResponse SaveUpdate(IMidiServiceTransportPluginConfig configUpdate);
+        [global::Windows.Foundation.Metadata.Overload(@"SaveUpdate2")]
+        MidiServiceConfigSaveResponse SaveUpdate(Guid transportId, global::Windows.Data.Json.JsonObject fullConfigObject);
         bool QueryCapability(Guid transportId, string capabilityQueryKey);
         global::System.Collections.Generic.IReadOnlyDictionary<string, bool> QueryAllCapabilities(Guid transportId);
+        string ConfigFilePath { get; }
     }
     [global::Windows.Foundation.Metadata.ContractVersion(65536u)]
     public enum MidiServiceConfigApiContract
@@ -413,6 +442,105 @@ namespace Windows.Devices.Midi2.ServiceConfig
         ErrorNotImplemented = unchecked((int)0xa28),
     }
     [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")]
+    [global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse))]
+    [global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponseRcwFactory]
+    [global::WinRT.ProjectedRuntimeClass(typeof(IMidiServiceConfigSaveResponse))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
+    public sealed class MidiServiceConfigSaveResponse : global::System.Runtime.InteropServices.ICustomQueryInterface, IWinRTObject, IEquatable<MidiServiceConfigSaveResponse>
+    {
+        private IntPtr ThisPtr => _inner == null ? (((IWinRTObject)this).NativeObject).ThisPtr : _inner.ThisPtr;
+
+        private readonly IObjectReference _inner = null;
+
+
+
+        private IObjectReference _objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceConfigSaveResponse => _inner;
+
+
+        public static MidiServiceConfigSaveResponse FromAbi(IntPtr thisPtr)
+        {
+            if (thisPtr == IntPtr.Zero) return null;
+            return MarshalInspectable<MidiServiceConfigSaveResponse>.FromAbi(thisPtr);
+        }
+
+        internal MidiServiceConfigSaveResponse(IObjectReference objRef)
+        {
+            _inner = objRef.As(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.IID);
+
+        }
+
+
+        public static bool operator ==(MidiServiceConfigSaveResponse x, MidiServiceConfigSaveResponse y) => (x?.ThisPtr ?? IntPtr.Zero) == (y?.ThisPtr ?? IntPtr.Zero);
+        public static bool operator !=(MidiServiceConfigSaveResponse x, MidiServiceConfigSaveResponse y) => !(x == y);
+        public bool Equals(MidiServiceConfigSaveResponse other) => this == other;
+        public override bool Equals(object obj) => obj is MidiServiceConfigSaveResponse that && this == that;
+        public override int GetHashCode() => ThisPtr.GetHashCode();
+
+
+        bool IWinRTObject.HasUnwrappableNativeObject => true;
+        IObjectReference IWinRTObject.NativeObject => _inner;
+        private volatile global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> _queryInterfaceCache;
+        private global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> MakeQueryInterfaceCache()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref _queryInterfaceCache, new global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference>(), null); 
+            return _queryInterfaceCache;
+        }
+        global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> IWinRTObject.QueryInterfaceCache => _queryInterfaceCache ?? MakeQueryInterfaceCache();
+        private volatile global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> _additionalTypeData;
+        private global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> MakeAdditionalTypeData()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref _additionalTypeData, new global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object>(), null); 
+            return _additionalTypeData;
+        }
+        global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> IWinRTObject.AdditionalTypeData => _additionalTypeData ?? MakeAdditionalTypeData();
+
+        private struct InterfaceTag<I>{};
+
+
+        public string BackupFilePath => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.get_BackupFilePath(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceConfigSaveResponse);
+
+        public string ConfigFilePath => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.get_ConfigFilePath(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceConfigSaveResponse);
+
+        public string ErrorMessage => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.get_ErrorMessage(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceConfigSaveResponse);
+
+        public MidiServiceConfigSaveResult Result => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.get_Result(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceConfigSaveResponse);
+
+        public bool Success => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.get_Success(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceConfigSaveResponse);
+
+        private bool IsOverridableInterface(Guid iid) => false;
+
+        global::System.Runtime.InteropServices.CustomQueryInterfaceResult global::System.Runtime.InteropServices.ICustomQueryInterface.GetInterface(ref Guid iid, out IntPtr ppv)
+        {
+            ppv = IntPtr.Zero;
+            if (IsOverridableInterface(iid) || global::WinRT.Interop.IID.IID_IInspectable == iid)
+            {
+                return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.NotHandled;
+            }
+
+            if (((IWinRTObject)this).NativeObject.TryAs(iid, out ppv) >= 0)
+            {
+                return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.Handled;
+            }
+
+            return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.NotHandled;
+        }
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")][global::WinRT.WinRTExposedType(typeof(global::WinRT.EnumTypeDetails<MidiServiceConfigSaveResult>))][global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
+    public enum MidiServiceConfigSaveResult : int
+    {
+        Success = unchecked((int)0),
+        ErrorNotPersistable = unchecked((int)0x64),
+        ErrorConfigJsonNullOrEmpty = unchecked((int)0x258),
+        ErrorProcessingConfigJson = unchecked((int)0x259),
+        ErrorNoConfigFileRegistered = unchecked((int)0x2bc),
+        ErrorConfigFileNotValidJson = unchecked((int)0x2bd),
+        ErrorAccessDenied = unchecked((int)0x2be),
+        ErrorConfigFileBusy = unchecked((int)0x2bf),
+        ErrorWritingConfigFile = unchecked((int)0x2c0),
+        ErrorVerificationFailed = unchecked((int)0x2c1),
+        ErrorUnexpected = unchecked((int)0x7d0),
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")]
     [global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationConfig))]
     [global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationConfigRcwFactory]
     [global::WinRT.ProjectedRuntimeClass(typeof(IMidiServiceEndpointCustomizationConfig))]
@@ -650,6 +778,12 @@ namespace Windows.Devices.Midi2.ServiceConfig
 
         public void AddMidi1DestinationPortCustomName(global::Windows.Devices.Midi2.MidiGroup group, string name) => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationConfigMethods.AddMidi1DestinationPortCustomName(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationConfig, group, name);
 
+        public bool ClearDisplayProperties
+        {
+            get => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationConfigMethods.get_ClearDisplayProperties(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationConfig);
+            set => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationConfigMethods.set_ClearDisplayProperties(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationConfig, value);
+        }
+
         public global::Windows.Data.Json.JsonObject ConfigJson => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.get_ConfigJson(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig);
 
         public string Description
@@ -704,6 +838,181 @@ namespace Windows.Devices.Midi2.ServiceConfig
         {
             get => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationConfigMethods.get_SupportsMidiPolyphonicExpression(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationConfig);
             set => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationConfigMethods.set_SupportsMidiPolyphonicExpression(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationConfig, value);
+        }
+
+        public Guid TransportId => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.get_TransportId(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig);
+
+        private bool IsOverridableInterface(Guid iid) => false;
+
+        global::System.Runtime.InteropServices.CustomQueryInterfaceResult global::System.Runtime.InteropServices.ICustomQueryInterface.GetInterface(ref Guid iid, out IntPtr ppv)
+        {
+            ppv = IntPtr.Zero;
+            if (IsOverridableInterface(iid) || global::WinRT.Interop.IID.IID_IInspectable == iid)
+            {
+                return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.NotHandled;
+            }
+
+            if (((IWinRTObject)this).NativeObject.TryAs(iid, out ppv) >= 0)
+            {
+                return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.Handled;
+            }
+
+            return global::System.Runtime.InteropServices.CustomQueryInterfaceResult.NotHandled;
+        }
+    }
+    [global::WinRT.WindowsRuntimeType("Windows.Devices.Midi2")]
+    [global::WinRT.WindowsRuntimeHelperType(typeof(global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig))]
+    [global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfigRcwFactory]
+    [global::WinRT.ProjectedRuntimeClass(typeof(IMidiServiceEndpointCustomizationRemovalConfig))]
+    [global::Windows.Foundation.Metadata.ContractVersion(typeof(MidiServiceConfigApiContract), 65536u)]
+    public sealed class MidiServiceEndpointCustomizationRemovalConfig : IMidiServiceTransportPluginConfig, global::System.Runtime.InteropServices.ICustomQueryInterface, IWinRTObject, IEquatable<MidiServiceEndpointCustomizationRemovalConfig>
+    {
+        private IntPtr ThisPtr => _inner == null ? (((IWinRTObject)this).NativeObject).ThisPtr : _inner.ThisPtr;
+
+        private readonly IObjectReference _inner = null;
+
+
+
+        private IObjectReference _objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfig => _inner;
+        private volatile IObjectReference ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig;
+        private IObjectReference Make___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig, ((IWinRTObject)this).NativeObject.As<IUnknownVftbl>(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.IID), null);
+            return ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig;
+        }
+        private IObjectReference _objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig => ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig ?? Make___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig();
+
+
+
+        private static class _IMidiServiceEndpointCustomizationRemovalConfigFactoryMethods
+        {
+            public static unsafe IntPtr CreateInstance(IObjectReference _obj, Guid transportId)
+            {
+                var ThisPtr = _obj.ThisPtr;
+
+                IntPtr __retval = default;
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr*, int>**)ThisPtr)[6](ThisPtr, transportId, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return __retval;
+            }
+
+            public static unsafe IntPtr CreateInstance2(IObjectReference _obj, Guid transportId, MidiServiceConfigEndpointMatchCriteria matchCriteria)
+            {
+                var ThisPtr = _obj.ThisPtr;
+
+                ObjectReferenceValue __matchCriteria = default;
+                IntPtr __retval = default;
+                try
+                {
+                    __matchCriteria = global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria.CreateMarshaler2(matchCriteria);
+                    global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, transportId, MarshalInspectable<object>.GetAbi(__matchCriteria), &__retval));
+                    global::System.GC.KeepAlive(_obj);
+                    return __retval;
+                }
+                finally
+                {
+                    MarshalInspectable<object>.DisposeMarshaler(__matchCriteria);
+                }
+            }
+        }
+
+        private static volatile IObjectReference ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfigFactory;
+        private static IObjectReference _objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfigFactory
+        {
+            get
+            { 
+                var factory = ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfigFactory;
+                if (factory != null && factory.IsInCurrentContext)
+                {
+                    return factory;
+                }
+                else
+                {
+                    return ___objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfigFactory = ActivationFactory.Get("Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig", global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigFactoryMethods.IID);
+                }
+            }
+        }
+
+        public MidiServiceEndpointCustomizationRemovalConfig(Guid transportId) 
+        { 
+        IntPtr ptr = (_IMidiServiceEndpointCustomizationRemovalConfigFactoryMethods.CreateInstance(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfigFactory, transportId)); 
+        try 
+        { 
+        _inner = ComWrappersSupport.GetObjectReferenceForInterface(ptr, global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigMethods.IID, false); 
+
+        } 
+        finally 
+        { 
+        MarshalInspectable<object>.DisposeAbi(ptr); 
+        }
+
+        ComWrappersSupport.RegisterObjectForInterface(this, ThisPtr);
+        ComWrappersHelper.Init(_inner, false);
+        }
+
+        public MidiServiceEndpointCustomizationRemovalConfig(Guid transportId, MidiServiceConfigEndpointMatchCriteria matchCriteria) 
+        { 
+        IntPtr ptr = (_IMidiServiceEndpointCustomizationRemovalConfigFactoryMethods.CreateInstance2(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfigFactory, transportId, matchCriteria)); 
+        try 
+        { 
+        _inner = ComWrappersSupport.GetObjectReferenceForInterface(ptr, global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigMethods.IID, false); 
+
+        } 
+        finally 
+        { 
+        MarshalInspectable<object>.DisposeAbi(ptr); 
+        }
+
+        ComWrappersSupport.RegisterObjectForInterface(this, ThisPtr);
+        ComWrappersHelper.Init(_inner, false);
+        }
+
+        public static MidiServiceEndpointCustomizationRemovalConfig FromAbi(IntPtr thisPtr)
+        {
+            if (thisPtr == IntPtr.Zero) return null;
+            return MarshalInspectable<MidiServiceEndpointCustomizationRemovalConfig>.FromAbi(thisPtr);
+        }
+
+        internal MidiServiceEndpointCustomizationRemovalConfig(IObjectReference objRef)
+        {
+            _inner = objRef.As(global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigMethods.IID);
+
+        }
+
+
+        public static bool operator ==(MidiServiceEndpointCustomizationRemovalConfig x, MidiServiceEndpointCustomizationRemovalConfig y) => (x?.ThisPtr ?? IntPtr.Zero) == (y?.ThisPtr ?? IntPtr.Zero);
+        public static bool operator !=(MidiServiceEndpointCustomizationRemovalConfig x, MidiServiceEndpointCustomizationRemovalConfig y) => !(x == y);
+        public bool Equals(MidiServiceEndpointCustomizationRemovalConfig other) => this == other;
+        public override bool Equals(object obj) => obj is MidiServiceEndpointCustomizationRemovalConfig that && this == that;
+        public override int GetHashCode() => ThisPtr.GetHashCode();
+
+
+        bool IWinRTObject.HasUnwrappableNativeObject => true;
+        IObjectReference IWinRTObject.NativeObject => _inner;
+        private volatile global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> _queryInterfaceCache;
+        private global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> MakeQueryInterfaceCache()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref _queryInterfaceCache, new global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference>(), null); 
+            return _queryInterfaceCache;
+        }
+        global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, IObjectReference> IWinRTObject.QueryInterfaceCache => _queryInterfaceCache ?? MakeQueryInterfaceCache();
+        private volatile global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> _additionalTypeData;
+        private global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> MakeAdditionalTypeData()
+        {
+            global::System.Threading.Interlocked.CompareExchange(ref _additionalTypeData, new global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object>(), null); 
+            return _additionalTypeData;
+        }
+        global::System.Collections.Concurrent.ConcurrentDictionary<RuntimeTypeHandle, object> IWinRTObject.AdditionalTypeData => _additionalTypeData ?? MakeAdditionalTypeData();
+
+        private struct InterfaceTag<I>{};
+
+
+        public global::Windows.Data.Json.JsonObject ConfigJson => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.get_ConfigJson(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig);
+
+        public MidiServiceConfigEndpointMatchCriteria MatchCriteria
+        {
+            get => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigMethods.get_MatchCriteria(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfig);
+            set => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigMethods.set_MatchCriteria(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceEndpointCustomizationRemovalConfig, value);
         }
 
         public Guid TransportId => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.get_TransportId(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfig);
@@ -1029,9 +1338,15 @@ namespace Windows.Devices.Midi2.ServiceConfig
 
         public static MidiServiceConfigResponse SendCommand(MidiServiceTransportCommand command) => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigManagerStaticsMethods.SendCommand(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfigManagerStatics, command);
 
+        public static MidiServiceConfigSaveResponse SaveUpdate(IMidiServiceTransportPluginConfig configUpdate) => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigManagerStaticsMethods.SaveUpdate(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfigManagerStatics, configUpdate);
+
+        public static MidiServiceConfigSaveResponse SaveUpdate(Guid transportId, global::Windows.Data.Json.JsonObject fullConfigObject) => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigManagerStaticsMethods.SaveUpdate(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfigManagerStatics, transportId, fullConfigObject);
+
         public static bool QueryCapability(Guid transportId, string capabilityQueryKey) => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigManagerStaticsMethods.QueryCapability(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfigManagerStatics, transportId, capabilityQueryKey);
 
         public static global::System.Collections.Generic.IReadOnlyDictionary<string, bool> QueryAllCapabilities(Guid transportId) => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigManagerStaticsMethods.QueryAllCapabilities(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfigManagerStatics, transportId);
+
+        public static string ConfigFilePath => global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigManagerStaticsMethods.get_ConfigFilePath(_objRef_global__Windows_Devices_Midi2_ServiceConfig_IMidiServiceTransportPluginConfigManagerStatics);
     }
 }
 
@@ -1463,14 +1778,105 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get
             {
-                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xEE, 0x0, 0x60, 0x0, 0x70, 0x0 };
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xDD, 0x0, 0x60, 0x0, 0x70, 0x0 };
                 return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
             }
         }
 
     }
-    [Guid("8087B303-0519-C0DE-31D1-EE0060007000")]
+    [Guid("8087B303-0519-C0DE-31D1-DD0060007000")]
     internal interface IMidiServiceConfigResponse : global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigResponse
+    {
+    }
+    internal static class IMidiServiceConfigSaveResponseMethods
+    {
+
+        internal static unsafe string get_BackupFilePath(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[10](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return MarshalString.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalString.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe string get_ConfigFilePath(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[9](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return MarshalString.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalString.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe string get_ErrorMessage(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[8](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return MarshalString.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalString.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResult get_Result(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResult __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResult*, int>**)ThisPtr)[6](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval;
+        }
+
+        internal static unsafe bool get_Success(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[7](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval != 0;
+        }
+
+
+
+        public static ref readonly global::System.Guid IID
+        {
+            [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xDD, 0x0, 0x60, 0x0, 0x80, 0x0 };
+                return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
+            }
+        }
+
+    }
+    [Guid("8087B303-0519-C0DE-31D1-DD0060008000")]
+    internal interface IMidiServiceConfigSaveResponse : global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponse
     {
     }
     internal static class IMidiServiceEndpointCustomizationConfigMethods
@@ -1488,7 +1894,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
                 MarshalString.Pinnable __name = new(name);
                 fixed(void* ___name = __name)
                 {
-                    (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr, int>**)ThisPtr)[24](ThisPtr, MarshalInspectable<object>.GetAbi(__group), MarshalString.GetAbi(ref __name));
+                    (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr, int>**)ThisPtr)[26](ThisPtr, MarshalInspectable<object>.GetAbi(__group), MarshalString.GetAbi(ref __name));
                     global::System.GC.KeepAlive(_obj);
                 }
             }
@@ -1509,7 +1915,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
                 MarshalString.Pinnable __name = new(name);
                 fixed(void* ___name = __name)
                 {
-                    (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr, int>**)ThisPtr)[25](ThisPtr, MarshalInspectable<object>.GetAbi(__group), MarshalString.GetAbi(ref __name));
+                    (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr, int>**)ThisPtr)[27](ThisPtr, MarshalInspectable<object>.GetAbi(__group), MarshalString.GetAbi(ref __name));
                     global::System.GC.KeepAlive(_obj);
                 }
             }
@@ -1518,6 +1924,23 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
                 MarshalInspectable<object>.DisposeMarshaler(__group);
             }
         }
+        internal static unsafe bool get_ClearDisplayProperties(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            byte __retval = default;
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[12](ThisPtr, &__retval);
+            global::System.GC.KeepAlive(_obj);
+            return __retval != 0;
+        }
+        internal static unsafe void set_ClearDisplayProperties(IObjectReference _obj, bool value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte, int>**)ThisPtr)[13](ThisPtr, (byte)(value ? 1 : 0));
+            global::System.GC.KeepAlive(_obj);
+        }
+
         internal static unsafe string get_Description(IObjectReference _obj)
         {
             var ThisPtr = _obj.ThisPtr;
@@ -1581,7 +2004,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[12](ThisPtr, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[14](ThisPtr, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 return global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria.FromAbi(__retval);
             }
@@ -1598,7 +2021,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             try
             {
                 __value = global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria.CreateMarshaler2(value);
-                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[13](ThisPtr, MarshalInspectable<object>.GetAbi(__value));
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[15](ThisPtr, MarshalInspectable<object>.GetAbi(__value));
                 global::System.GC.KeepAlive(_obj);
             }
             finally
@@ -1612,7 +2035,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             var ThisPtr = _obj.ThisPtr;
 
             global::Windows.Devices.Midi2.Enumeration.Midi1PortNamingApproach __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Enumeration.Midi1PortNamingApproach*, int>**)ThisPtr)[22](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Enumeration.Midi1PortNamingApproach*, int>**)ThisPtr)[24](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval;
         }
@@ -1620,7 +2043,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
         {
             var ThisPtr = _obj.ThisPtr;
 
-            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Enumeration.Midi1PortNamingApproach, int>**)ThisPtr)[23](ThisPtr, value);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, global::Windows.Devices.Midi2.Enumeration.Midi1PortNamingApproach, int>**)ThisPtr)[25](ThisPtr, value);
             global::System.GC.KeepAlive(_obj);
         }
 
@@ -1657,7 +2080,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             var ThisPtr = _obj.ThisPtr;
 
             ulong __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, ulong*, int>**)ThisPtr)[20](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, ulong*, int>**)ThisPtr)[22](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval;
         }
@@ -1665,7 +2088,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
         {
             var ThisPtr = _obj.ThisPtr;
 
-            (*(delegate* unmanaged[Stdcall]<IntPtr, ulong, int>**)ThisPtr)[21](ThisPtr, value);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, ulong, int>**)ThisPtr)[23](ThisPtr, value);
             global::System.GC.KeepAlive(_obj);
         }
 
@@ -1674,7 +2097,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             var ThisPtr = _obj.ThisPtr;
 
             ushort __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, ushort*, int>**)ThisPtr)[18](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, ushort*, int>**)ThisPtr)[20](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval;
         }
@@ -1682,7 +2105,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
         {
             var ThisPtr = _obj.ThisPtr;
 
-            (*(delegate* unmanaged[Stdcall]<IntPtr, ushort, int>**)ThisPtr)[19](ThisPtr, value);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, ushort, int>**)ThisPtr)[21](ThisPtr, value);
             global::System.GC.KeepAlive(_obj);
         }
 
@@ -1691,7 +2114,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             var ThisPtr = _obj.ThisPtr;
 
             byte __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[14](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[16](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval != 0;
         }
@@ -1699,7 +2122,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
         {
             var ThisPtr = _obj.ThisPtr;
 
-            (*(delegate* unmanaged[Stdcall]<IntPtr, byte, int>**)ThisPtr)[15](ThisPtr, (byte)(value ? 1 : 0));
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte, int>**)ThisPtr)[17](ThisPtr, (byte)(value ? 1 : 0));
             global::System.GC.KeepAlive(_obj);
         }
 
@@ -1708,7 +2131,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             var ThisPtr = _obj.ThisPtr;
 
             byte __retval = default;
-            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[16](ThisPtr, &__retval);
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte*, int>**)ThisPtr)[18](ThisPtr, &__retval);
             global::System.GC.KeepAlive(_obj);
             return __retval != 0;
         }
@@ -1716,7 +2139,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
         {
             var ThisPtr = _obj.ThisPtr;
 
-            (*(delegate* unmanaged[Stdcall]<IntPtr, byte, int>**)ThisPtr)[17](ThisPtr, (byte)(value ? 1 : 0));
+            (*(delegate* unmanaged[Stdcall]<IntPtr, byte, int>**)ThisPtr)[19](ThisPtr, (byte)(value ? 1 : 0));
             global::System.GC.KeepAlive(_obj);
         }
 
@@ -1840,6 +2263,116 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
     }
     [Guid("8087B303-0519-C0DE-31D1-FF0060002000")]
     internal interface IMidiServiceEndpointCustomizationConfigFactory : global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationConfigFactory
+    {
+    }
+    internal static class IMidiServiceEndpointCustomizationRemovalConfigMethods
+    {
+
+        internal static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria get_MatchCriteria(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[6](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria.DisposeAbi(__retval);
+            }
+        }
+        internal static unsafe void set_MatchCriteria(IObjectReference _obj, global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria value)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __value = default;
+            try
+            {
+                __value = global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria.CreateMarshaler2(value);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, int>**)ThisPtr)[7](ThisPtr, MarshalInspectable<object>.GetAbi(__value));
+                global::System.GC.KeepAlive(_obj);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__value);
+            }
+        }
+
+
+
+        public static ref readonly global::System.Guid IID
+        {
+            [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xDD, 0x0, 0x60, 0x0, 0x90, 0x0 };
+                return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
+            }
+        }
+
+    }
+    [Guid("8087B303-0519-C0DE-31D1-DD0060009000")]
+    internal interface IMidiServiceEndpointCustomizationRemovalConfig : global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfig
+    {
+    }
+    internal static class IMidiServiceEndpointCustomizationRemovalConfigFactoryMethods
+    {
+
+
+        internal static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig CreateInstance(IObjectReference _obj, Guid transportId)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr*, int>**)ThisPtr)[6](ThisPtr, transportId, &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig.FromAbi(__retval);
+            }
+            finally
+            {
+                global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig CreateInstance2(IObjectReference _obj, Guid transportId, global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria matchCriteria)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __matchCriteria = default;
+            IntPtr __retval = default;
+            try
+            {
+                __matchCriteria = global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigEndpointMatchCriteria.CreateMarshaler2(matchCriteria);
+                global::WinRT.ExceptionHelpers.ThrowExceptionForHR((*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr, IntPtr*, int>**)ThisPtr)[7](ThisPtr, transportId, MarshalInspectable<object>.GetAbi(__matchCriteria), &__retval));
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__matchCriteria);
+                global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig.DisposeAbi(__retval);
+            }
+        }
+
+
+        public static ref readonly global::System.Guid IID
+        {
+            [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                global::System.ReadOnlySpan<byte> data = new byte[] { 0x3, 0xB3, 0x87, 0x80, 0x19, 0x5, 0xDE, 0xC0, 0x31, 0xD1, 0xFF, 0x0, 0x60, 0x0, 0x90, 0x0 };
+                return ref global::System.Runtime.CompilerServices.Unsafe.As<byte, global::System.Guid>(ref global::System.Runtime.InteropServices.MemoryMarshal.GetReference(data));
+            }
+        }
+
+    }
+    [Guid("8087B303-0519-C0DE-31D1-FF0060009000")]
+    internal interface IMidiServiceEndpointCustomizationRemovalConfigFactory : global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigFactory
     {
     }
     internal static class IMidiServiceTransportCommandMethods
@@ -2296,6 +2829,46 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             }
         }
 
+        internal static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse SaveUpdate(IObjectReference _obj, global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfig configUpdate)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __configUpdate = default;
+            IntPtr __retval = default;
+            try
+            {
+                __configUpdate = MarshalInterface<global::Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfig>.CreateMarshaler2(configUpdate, global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceTransportPluginConfigMethods.IID);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr, IntPtr*, int>**)ThisPtr)[9](ThisPtr, MarshalInspectable<object>.GetAbi(__configUpdate), &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__configUpdate);
+                global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse.DisposeAbi(__retval);
+            }
+        }
+
+        internal static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse SaveUpdate(IObjectReference _obj, Guid transportId, global::Windows.Data.Json.JsonObject fullConfigObject)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            ObjectReferenceValue __fullConfigObject = default;
+            IntPtr __retval = default;
+            try
+            {
+                __fullConfigObject = global::ABI.Windows.Data.Json.JsonObject.CreateMarshaler2(fullConfigObject);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr, IntPtr*, int>**)ThisPtr)[10](ThisPtr, transportId, MarshalInspectable<object>.GetAbi(__fullConfigObject), &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalInspectable<object>.DisposeMarshaler(__fullConfigObject);
+                global::ABI.Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse.DisposeAbi(__retval);
+            }
+        }
+
         internal static unsafe bool QueryCapability(IObjectReference _obj, Guid transportId, string capabilityQueryKey)
         {
             var ThisPtr = _obj.ThisPtr;
@@ -2304,7 +2877,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             MarshalString.Pinnable __capabilityQueryKey = new(capabilityQueryKey);
             fixed(void* ___capabilityQueryKey = __capabilityQueryKey)
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr, byte*, int>**)ThisPtr)[9](ThisPtr, transportId, MarshalString.GetAbi(ref __capabilityQueryKey), &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr, byte*, int>**)ThisPtr)[12](ThisPtr, transportId, MarshalString.GetAbi(ref __capabilityQueryKey), &__retval);
                 global::System.GC.KeepAlive(_obj);
                 return __retval != 0;
             }
@@ -2317,7 +2890,7 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             IntPtr __retval = default;
             try
             {
-                (*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr*, int>**)ThisPtr)[10](ThisPtr, transportId, &__retval);
+                (*(delegate* unmanaged[Stdcall]<IntPtr, Guid, IntPtr*, int>**)ThisPtr)[13](ThisPtr, transportId, &__retval);
                 global::System.GC.KeepAlive(_obj);
                 _ = global::WinRT.GenericTypeInstantiations.Windows_Foundation_Collections_IMapView_2_String__Boolean.EnsureInitialized();
                 return MarshalInterface<global::System.Collections.Generic.IReadOnlyDictionary<string, bool>>.FromAbi(__retval);
@@ -2327,6 +2900,23 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
                 MarshalInterface<global::System.Collections.Generic.IReadOnlyDictionary<string, bool>>.DisposeAbi(__retval);
             }
         }
+        internal static unsafe string get_ConfigFilePath(IObjectReference _obj)
+        {
+            var ThisPtr = _obj.ThisPtr;
+
+            IntPtr __retval = default;
+            try
+            {
+                (*(delegate* unmanaged[Stdcall]<IntPtr, IntPtr*, int>**)ThisPtr)[11](ThisPtr, &__retval);
+                global::System.GC.KeepAlive(_obj);
+                return MarshalString.FromAbi(__retval);
+            }
+            finally
+            {
+                MarshalString.DisposeAbi(__retval);
+            }
+        }
+
 
 
         public static ref readonly global::System.Guid IID
@@ -2395,6 +2985,31 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
             => new global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigResponse(inspectable.ObjRef);
     }
     [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+    public struct MidiServiceConfigSaveResponse
+    {
+
+        public static IObjectReference CreateMarshaler(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse obj) => obj is null ? null : MarshalInspectable<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.CreateMarshaler<IUnknownVftbl>(obj, global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.IID);
+        public static ObjectReferenceValue CreateMarshaler2(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse obj) => MarshalInspectable<object>.CreateMarshaler2(obj, global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceConfigSaveResponseMethods.IID);
+        public static IntPtr GetAbi(IObjectReference value) => value is null ? IntPtr.Zero : MarshalInterfaceHelper<object>.GetAbi(value);
+        public static global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse FromAbi(IntPtr thisPtr) => global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse.FromAbi(thisPtr);
+        public static IntPtr FromManaged(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse obj) => obj is null ? IntPtr.Zero : CreateMarshaler2(obj).Detach();
+        public static unsafe MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.MarshalerArray CreateMarshalerArray(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse[] array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.CreateMarshalerArray2(array, (o) => CreateMarshaler2(o));
+        public static (int length, IntPtr data) GetAbiArray(object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.GetAbiArray(box);
+        public static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse[] FromAbiArray(object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.FromAbiArray(box, FromAbi);
+        public static void CopyAbiArray(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse[] array, object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.CopyAbiArray(array, box, FromAbi);
+        public static (int length, IntPtr data) FromManagedArray(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse[] array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.FromManagedArray(array, (o) => FromManaged(o));
+        public static void DisposeMarshaler(IObjectReference value) => MarshalInspectable<object>.DisposeMarshaler(value);
+        public static void DisposeMarshalerArray(MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.MarshalerArray array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse>.DisposeMarshalerArray(array);
+        public static void DisposeAbi(IntPtr abi) => MarshalInspectable<object>.DisposeAbi(abi);
+        public static unsafe void DisposeAbiArray(object box) => MarshalInspectable<object>.DisposeAbiArray(box);
+    }
+    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+    internal sealed class MidiServiceConfigSaveResponseRcwFactoryAttribute : global::WinRT.WinRTImplementationTypeRcwFactoryAttribute
+    {
+        public override object CreateInstance(global::WinRT.IInspectable inspectable)
+            => new global::Windows.Devices.Midi2.ServiceConfig.MidiServiceConfigSaveResponse(inspectable.ObjRef);
+    }
+    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
     public struct MidiServiceEndpointCustomizationConfig
     {
 
@@ -2418,6 +3033,31 @@ namespace ABI.Windows.Devices.Midi2.ServiceConfig
     {
         public override object CreateInstance(global::WinRT.IInspectable inspectable)
             => new global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationConfig(inspectable.ObjRef);
+    }
+    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+    public struct MidiServiceEndpointCustomizationRemovalConfig
+    {
+
+        public static IObjectReference CreateMarshaler(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig obj) => obj is null ? null : MarshalInspectable<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.CreateMarshaler<IUnknownVftbl>(obj, global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigMethods.IID);
+        public static ObjectReferenceValue CreateMarshaler2(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig obj) => MarshalInspectable<object>.CreateMarshaler2(obj, global::ABI.Windows.Devices.Midi2.ServiceConfig.IMidiServiceEndpointCustomizationRemovalConfigMethods.IID);
+        public static IntPtr GetAbi(IObjectReference value) => value is null ? IntPtr.Zero : MarshalInterfaceHelper<object>.GetAbi(value);
+        public static global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig FromAbi(IntPtr thisPtr) => global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig.FromAbi(thisPtr);
+        public static IntPtr FromManaged(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig obj) => obj is null ? IntPtr.Zero : CreateMarshaler2(obj).Detach();
+        public static unsafe MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.MarshalerArray CreateMarshalerArray(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig[] array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.CreateMarshalerArray2(array, (o) => CreateMarshaler2(o));
+        public static (int length, IntPtr data) GetAbiArray(object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.GetAbiArray(box);
+        public static unsafe global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig[] FromAbiArray(object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.FromAbiArray(box, FromAbi);
+        public static void CopyAbiArray(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig[] array, object box) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.CopyAbiArray(array, box, FromAbi);
+        public static (int length, IntPtr data) FromManagedArray(global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig[] array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.FromManagedArray(array, (o) => FromManaged(o));
+        public static void DisposeMarshaler(IObjectReference value) => MarshalInspectable<object>.DisposeMarshaler(value);
+        public static void DisposeMarshalerArray(MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.MarshalerArray array) => MarshalInterfaceHelper<global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig>.DisposeMarshalerArray(array);
+        public static void DisposeAbi(IntPtr abi) => MarshalInspectable<object>.DisposeAbi(abi);
+        public static unsafe void DisposeAbiArray(object box) => MarshalInspectable<object>.DisposeAbiArray(box);
+    }
+    [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+    internal sealed class MidiServiceEndpointCustomizationRemovalConfigRcwFactoryAttribute : global::WinRT.WinRTImplementationTypeRcwFactoryAttribute
+    {
+        public override object CreateInstance(global::WinRT.IInspectable inspectable)
+            => new global::Windows.Devices.Midi2.ServiceConfig.MidiServiceEndpointCustomizationRemovalConfig(inspectable.ObjRef);
     }
     [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
     public struct MidiServiceTransportCommand

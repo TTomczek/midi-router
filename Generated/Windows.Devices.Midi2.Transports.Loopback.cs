@@ -832,7 +832,7 @@ namespace Windows.Devices.Midi2.Transports.Loopback
         InvalidOrMissingEndpointNameA = unchecked((int)0x144),
         DuplicateNameA = unchecked((int)0x143),
         InvalidOrMissingEndpointNameB = unchecked((int)0x244),
-        DuplicateNameB = unchecked((int)0x244),
+        DuplicateNameB = unchecked((int)0x243),
         ClientApiException = unchecked((int)0x11000035),
         InvalidArgument = unchecked((int)0x11000055),
         ClientApiAllocationFailure = unchecked((int)0x11000999),
