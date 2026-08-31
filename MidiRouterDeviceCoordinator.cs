@@ -1,18 +1,25 @@
+using Microsoft.Extensions.Logging;
+
 namespace midi_router;
 
 public sealed class MidiRouterDeviceCoordinator : IDisposable
 {
     private readonly MidiInputDeviceViewModel devices;
     private readonly MidiRouter router;
+    private readonly ILogger<MidiRouterDeviceCoordinator> logger;
     private readonly SemaphoreSlim synchronizationGate = new(1, 1);
     private int disposed;
 
     public MidiRouterDeviceCoordinator(
         MidiInputDeviceViewModel devices,
-        MidiRouter router)
+        MidiRouter router,
+        ILogger<MidiRouterDeviceCoordinator>? logger = null)
     {
         this.devices = devices;
         this.router = router;
+        this.logger = logger ?? LoggerFactory
+            .Create(builder => builder.AddDebug())
+            .CreateLogger<MidiRouterDeviceCoordinator>();
         devices.RoutingStateChanged += OnRoutingStateChanged;
         router.ActivityDetected += OnActivityDetected;
         router.Start();
@@ -57,6 +64,7 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
         var selected = devices.Devices
             .Where(row => row.IsSelected && row.InternalChannel.HasValue)
             .ToDictionary(row => row.EndpointDeviceId, StringComparer.Ordinal);
+        logger.RoutingSynchronizationStarted(selected.Count);
 
         foreach (var activeDeviceId in router.ActiveDeviceIds.ToArray())
         {

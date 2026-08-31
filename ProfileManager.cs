@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace midi_router;
 
@@ -72,6 +73,7 @@ public sealed class ProfileManager
     private readonly IProfileStore store;
     private readonly ApplicationSettingsCoordinator? settingsCoordinator;
     private readonly Action<string>? report;
+    private readonly ILogger<ProfileManager> logger;
     private readonly List<Profile> profiles = new();
     private readonly ObservableCollection<ProfileListItem> profileItems = new();
     private readonly ReadOnlyObservableCollection<ProfileListItem> readOnlyProfileItems;
@@ -79,11 +81,15 @@ public sealed class ProfileManager
     public ProfileManager(
         IProfileStore store,
         ApplicationSettingsCoordinator? settingsCoordinator = null,
-        Action<string>? report = null)
+        Action<string>? report = null,
+        ILogger<ProfileManager>? logger = null)
     {
         this.store = store;
         this.settingsCoordinator = settingsCoordinator;
         this.report = report;
+        this.logger = logger ?? LoggerFactory
+            .Create(builder => builder.AddDebug())
+            .CreateLogger<ProfileManager>();
         readOnlyProfileItems = new ReadOnlyObservableCollection<ProfileListItem>(profileItems);
     }
 
@@ -122,6 +128,7 @@ public sealed class ProfileManager
                     continue;
                 }
                 profiles.Add(profile);
+                logger.ProfileLoaded(profile.Id, profile.Name);
             }
             catch (Exception exception) when (exception is IOException ||
                 exception is UnauthorizedAccessException || exception is JsonException ||
@@ -161,6 +168,8 @@ public sealed class ProfileManager
         RebuildItems();
         ProfilesChanged?.Invoke(this, EventArgs.Empty);
         ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
+        logger.LogDebug("MIDI profiles loaded: count={ProfileCount}, activeProfileId={ActiveProfileId}.",
+            profiles.Count, ActiveProfileId);
     }
 
     public void Initialize() => Load();
@@ -182,6 +191,7 @@ public sealed class ProfileManager
         PersistActiveProfile();
         RebuildItems();
         ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
+        logger.ProfileSelected(profileId);
         return true;
     }
 
@@ -199,6 +209,7 @@ public sealed class ProfileManager
         RebuildItems();
         ProfilesChanged?.Invoke(this, EventArgs.Empty);
         ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
+        logger.ProfileCreated(profile.Id, profile.Name);
         return profile;
     }
 
@@ -239,6 +250,7 @@ public sealed class ProfileManager
         Replace(updated);
         RebuildItems();
         ProfilesChanged?.Invoke(this, EventArgs.Empty);
+        logger.ProfileRenamed(updated.Id, updated.Name);
         return true;
     }
 
@@ -294,6 +306,7 @@ public sealed class ProfileManager
 
         RebuildItems();
         ProfilesChanged?.Invoke(this, EventArgs.Empty);
+        logger.ProfileDeleted(profileId);
         return true;
     }
 
@@ -326,6 +339,8 @@ public sealed class ProfileManager
         }
         Replace(updated);
         profileItems.FirstOrDefault(item => item.Id == updated.Id)?.Update(updated);
+        logger.ProfileStateChanged(updated.Id, updated.SelectedDeviceIds?.Count ?? 0,
+            updated.DeviceChannelAssignments?.Count ?? 0);
         return true;
     }
 

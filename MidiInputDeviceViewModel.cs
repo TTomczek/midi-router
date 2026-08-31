@@ -122,6 +122,9 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
 
             State = snapshot.State;
             StatusMessage = snapshot.StatusMessage;
+            logger.LogDebug(
+                "MIDI device snapshot applied: state={State}, deviceCount={DeviceCount}.",
+                snapshot.State, snapshot.Devices.Count);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Devices)));
             RoutingStateChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -266,6 +269,9 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         {
             channelAssignments[pair.Key] = pair.Value;
         }
+        logger.LogInformation(
+            "MIDI active profile applied: profileId={ProfileId}, selectedDevices={SelectedDevices}, channelAssignments={ChannelAssignments}.",
+            profile.Id, selectedDeviceIds.Count, channelAssignments.Count);
         foreach (var row in rows)
         {
             row.IsSelected = selectedDeviceIds.Contains(row.EndpointDeviceId);

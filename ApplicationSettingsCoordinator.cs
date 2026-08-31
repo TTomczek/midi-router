@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace midi_router;
 
@@ -7,11 +8,18 @@ public sealed class ApplicationSettingsCoordinator
 {
     private readonly ISettingsStore store;
     private readonly Action<string>? report;
+    private readonly ILogger<ApplicationSettingsCoordinator> logger;
 
-    public ApplicationSettingsCoordinator(ISettingsStore store, Action<string>? report = null)
+    public ApplicationSettingsCoordinator(
+        ISettingsStore store,
+        Action<string>? report = null,
+        ILogger<ApplicationSettingsCoordinator>? logger = null)
     {
         this.store = store;
         this.report = report;
+        this.logger = logger ?? LoggerFactory
+            .Create(builder => builder.AddDebug())
+            .CreateLogger<ApplicationSettingsCoordinator>();
     }
 
     public ApplicationSettings Settings { get; private set; } = new();
@@ -42,6 +50,7 @@ public sealed class ApplicationSettingsCoordinator
     public void Update(Func<ApplicationSettings, ApplicationSettings> update, string settingName)
     {
         Settings = Normalize(update(Settings));
+        logger.SettingsChanged(settingName);
         try
         {
             store.Save(Settings);

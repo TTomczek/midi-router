@@ -27,12 +27,14 @@ namespace midi_router
                         Path.Combine(logDirectory, "midi-router.log"))));
             var settingsCoordinator = new ApplicationSettingsCoordinator(
                 new JsonSettingsStore(),
-                message => System.Diagnostics.Debug.WriteLine(message));
+                message => System.Diagnostics.Debug.WriteLine(message),
+                loggerFactory.CreateLogger<ApplicationSettingsCoordinator>());
             settingsCoordinator.Load();
             var profileManager = new ProfileManager(
                 new JsonProfileStore(),
                 settingsCoordinator,
-                message => System.Diagnostics.Debug.WriteLine(message));
+                message => System.Diagnostics.Debug.WriteLine(message),
+                loggerFactory.CreateLogger<ProfileManager>());
             profileManager.Load();
             themeManager = new ThemeManager(
                 settingsCoordinator,

@@ -85,12 +85,16 @@ public partial class MainWindow : Window
         MidiRouter? router = null;
         try
         {
-            routingProvider = new WindowsMidiRoutingEndpointProvider();
+            routingProvider = new WindowsMidiRoutingEndpointProvider(
+                logger: loggerFactory?.CreateLogger<WindowsMidiRoutingEndpointProvider>());
             router = new MidiRouter(
                 routingProvider,
                 logger: loggerFactory?.CreateLogger<MidiRouter>());
             router.Diagnostic += (_, message) => viewModel.StatusMessageFromRouter(message);
-            routerCoordinator = new MidiRouterDeviceCoordinator(viewModel, router);
+            routerCoordinator = new MidiRouterDeviceCoordinator(
+                viewModel,
+                router,
+                loggerFactory?.CreateLogger<MidiRouterDeviceCoordinator>());
         }
         catch (InvalidOperationException exception)
         {

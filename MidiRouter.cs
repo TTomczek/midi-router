@@ -34,9 +34,15 @@ public sealed class MidiRouter : IDisposable
     public void Start()
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
-        virtualEndpoint ??= endpoints.OpenVirtual(MidiRoutingConstants.VirtualDeviceName);
+        if (virtualEndpoint is null)
+        {
+            virtualEndpoint = endpoints.OpenVirtual(MidiRoutingConstants.VirtualDeviceName);
+        }
         virtualEndpoint.MessageReceived += OnVirtualMessageReceived;
         virtualEndpoint.Open();
+        logger.LogInformation(
+            "MIDI virtual routing endpoint started: {DeviceName}.",
+            MidiRoutingConstants.VirtualDeviceName);
     }
 
     public bool Activate(string deviceId, int? channel = null)
@@ -73,6 +79,7 @@ public sealed class MidiRouter : IDisposable
 
         physical[deviceId] = endpoint;
         byChannel[selectedChannel] = deviceId;
+        logger.RouteStarted(deviceId);
         return true;
     }
 
@@ -89,6 +96,7 @@ public sealed class MidiRouter : IDisposable
         {
             byChannel.Remove(channel);
         }
+        logger.RouteStopped(deviceId);
     }
 
     public bool TryChangeChannel(string deviceId, int channel)
@@ -110,6 +118,9 @@ public sealed class MidiRouter : IDisposable
 
         byChannel.Remove(previousChannel);
         byChannel[channel] = deviceId;
+        logger.LogInformation(
+            "MIDI channel assignment changed: {DeviceId}, previousChannel={PreviousChannel}, channel={Channel}.",
+            deviceId, previousChannel + 1, channel + 1);
         return true;
     }
 
@@ -185,6 +196,7 @@ public sealed class MidiRouter : IDisposable
         {
             virtualEndpoint.MessageReceived -= OnVirtualMessageReceived;
             virtualEndpoint.Dispose();
+            logger.LogInformation("MIDI virtual routing endpoint stopped.");
             virtualEndpoint = null;
         }
 

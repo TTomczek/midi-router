@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Windows.Devices.Midi2;
 using Windows.Devices.Midi2.Enumeration;
 using Windows.Devices.Midi2.Transports.Virtual;
@@ -6,28 +7,37 @@ namespace midi_router;
 
 public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointProvider
 {
+    private readonly ILogger<WindowsMidiRoutingEndpointProvider> logger;
+    private readonly string sessionName;
     private readonly MidiSession session;
     private readonly List<WindowsMidiRoutingEndpoint> endpoints = new();
     private MidiVirtualDevice? virtualDevice;
     private int disposed;
 
     public WindowsMidiRoutingEndpointProvider(
-        string sessionName = MidiRoutingConstants.VirtualDeviceName)
+        string sessionName = MidiRoutingConstants.VirtualDeviceName,
+        ILogger<WindowsMidiRoutingEndpointProvider>? logger = null)
     {
+        this.logger = logger ?? LoggerFactory
+            .Create(builder => builder.AddDebug())
+            .CreateLogger<WindowsMidiRoutingEndpointProvider>();
+        this.sessionName = sessionName;
         if (!MidiApi.EnsureServiceAvailable())
         {
             throw new InvalidOperationException("Windows MIDI Services is unavailable.");
         }
 
         session = MidiSession.Create(sessionName);
+        this.logger.SessionCreated(sessionName, session.SessionId);
     }
 
     public IMidiRoutingEndpoint OpenPhysical(string endpointDeviceId)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
         var endpoint = new WindowsMidiRoutingEndpoint(
-            session.CreateEndpointConnection(endpointDeviceId));
+            session.CreateEndpointConnection(endpointDeviceId), null, logger);
         endpoints.Add(endpoint);
+        logger.LogDebug("MIDI physical endpoint connection created: {EndpointId}.", endpointDeviceId);
         return endpoint;
     }
 
@@ -61,9 +71,10 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
         };
 
         virtualDevice = MidiVirtualDeviceManager.CreateVirtualDevice(config);
+        logger.VirtualDeviceCreated(name, virtualDevice.DeviceEndpointDeviceId);
         var endpoint = new WindowsMidiRoutingEndpoint(
             session.CreateEndpointConnection(virtualDevice.DeviceEndpointDeviceId),
-            virtualDevice);
+            virtualDevice, logger);
         endpoints.Add(endpoint);
         return endpoint;
     }
@@ -82,8 +93,14 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
         }
 
         endpoints.Clear();
+        var sessionId = session.SessionId;
         virtualDevice?.Cleanup();
+        if (virtualDevice is not null)
+        {
+            logger.VirtualDeviceDestroyed(MidiRoutingConstants.VirtualDeviceName);
+        }
         session.Dispose();
+        logger.SessionDestroyed(sessionName, sessionId);
         virtualDevice = null;
     }
 
@@ -91,14 +108,19 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
     {
         private readonly MidiEndpointConnection connection;
         private readonly MidiVirtualDevice? virtualDevice;
+        private readonly ILogger logger;
         private int disposed;
 
         public WindowsMidiRoutingEndpoint(
             MidiEndpointConnection connection,
-            MidiVirtualDevice? virtualDevice = null)
+            MidiVirtualDevice? virtualDevice = null,
+            ILogger? logger = null)
         {
             this.connection = connection;
             this.virtualDevice = virtualDevice;
+            this.logger = logger ?? LoggerFactory
+                .Create(builder => builder.AddDebug())
+                .CreateLogger("MIDI endpoint");
             IsVirtual = virtualDevice is not null;
             if (virtualDevice is not null)
             {
@@ -121,6 +143,8 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
                 throw new InvalidOperationException(
                     $"Could not open MIDI endpoint connection for {connection.ConnectedEndpointDeviceId}.");
             }
+            logger.EndpointConnectionOpened(
+                connection.ConnectedEndpointDeviceId, connection.ConnectionId, IsVirtual);
         }
 
         public bool Send(MidiRoutingMessage message)
@@ -169,6 +193,7 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
             {
                 connection.RemoveMessageProcessingPlugin(virtualDevice.PluginId);
             }
+            logger.EndpointConnectionClosed(connection.ConnectionId, IsVirtual);
         }
     }
 }
