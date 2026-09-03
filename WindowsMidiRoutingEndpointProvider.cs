@@ -190,7 +190,8 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
                 words.Take(wordCount).ToArray(),
                 checked((long)args.Timestamp));
             MidiRouterMessageDispatcher.Enqueue(
-                () => MessageReceived?.Invoke(this, message));
+                () => MessageReceived?.Invoke(this, message),
+                exception => logger.LogError(exception, "MIDI endpoint message processing failed."));
         }
 
         public void Dispose()

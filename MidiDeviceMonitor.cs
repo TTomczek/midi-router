@@ -115,11 +115,6 @@ public sealed class MidiDeviceMonitor : IDisposable
         logger.ShutdownStepStarted("MIDI input device provider");
         provider.Dispose();
         logger.ShutdownStepCompleted("MIDI input device provider", stopwatch.ElapsedMilliseconds);
-        Publish(new DeviceOverviewSnapshot(
-            Array.Empty<MidiInputDevice>(),
-            DeviceOverviewState.Stopped,
-            "MIDI device monitoring stopped."));
-        refreshGate.Dispose();
         logger.ShutdownStepCompleted("MIDI device monitor", stopwatch.ElapsedMilliseconds);
     }
 }

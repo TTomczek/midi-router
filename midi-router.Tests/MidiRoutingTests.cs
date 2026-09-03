@@ -113,6 +113,20 @@ public sealed class MidiRoutingTests
         Assert.NotEmpty(diagnostics);
     }
 
+    [Fact]
+    public void DeactivatingRouterEndpointReleasesItsChannel()
+    {
+        using var provider = new FakeEndpointProvider();
+        using var router = new MidiRouter(provider);
+        router.Start();
+
+        Assert.True(router.Activate("device-a", 0));
+        router.Deactivate("device-a");
+
+        Assert.Empty(router.Assignments);
+        Assert.True(router.Activate("device-b", 0));
+    }
+
     private sealed class FakeEndpointProvider : IMidiRoutingEndpointProvider
     {
         public Dictionary<string, FakeEndpoint> Physical { get; } = new();

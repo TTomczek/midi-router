@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace midi_router;
 
 /// <summary>A separately persisted MIDI configuration.</summary>
@@ -48,9 +46,6 @@ public sealed record Profile
         new Dictionary<string, int>(StringComparer.Ordinal);
     public DateTime LastEdited { get; init; } = DateTime.UtcNow;
 
-    [JsonIgnore]
-    public string DisplayName { get; internal set; } = string.Empty;
-
     public Profile Normalize()
     {
         if (string.IsNullOrWhiteSpace(Name))
@@ -78,6 +73,4 @@ public sealed record Profile
         };
     }
 
-    public Profile WithName(string name)
-        => this with { Name = name.Trim(), LastEdited = DateTime.UtcNow };
 }

@@ -172,9 +172,6 @@ public sealed class ProfileManager
             profiles.Count, ActiveProfileId);
     }
 
-    public void Initialize() => Load();
-    public void LoadProfiles() => Load();
-
     public bool Select(string profileId)
     {
         if (!profiles.Any(profile => profile.Id == profileId))
@@ -212,8 +209,6 @@ public sealed class ProfileManager
         logger.ProfileCreated(profile.Id, profile.Name);
         return profile;
     }
-
-    public Profile CreateProfile(string name) => Create(name);
 
     public bool TryCreate(string? name, out Profile? profile)
     {
@@ -253,8 +248,6 @@ public sealed class ProfileManager
         logger.ProfileRenamed(updated.Id, updated.Name);
         return true;
     }
-
-    public bool RenameProfile(string profileId, string name) => Rename(profileId, name);
 
     public bool TryRename(string profileId, string? name)
     {
@@ -310,8 +303,6 @@ public sealed class ProfileManager
         return true;
     }
 
-    public bool DeleteProfile(string profileId) => Delete(profileId);
-
     public bool UpdateActiveState(
         IEnumerable<string> selectedDeviceIds,
         IReadOnlyDictionary<string, int> channelAssignments)
@@ -343,12 +334,6 @@ public sealed class ProfileManager
             updated.DeviceChannelAssignments?.Count ?? 0);
         return true;
     }
-
-    public string GetDisplayName(Profile profile)
-        => profileItems.FirstOrDefault(item => item.Id == profile.Id)?.DisplayName ?? profile.Name;
-
-    public string GetDisplayLabel(string profileId)
-        => profileItems.FirstOrDefault(item => item.Id == profileId)?.DisplayName ?? string.Empty;
 
     private static string ValidateName(string name)
     {

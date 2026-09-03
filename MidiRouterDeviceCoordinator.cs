@@ -35,6 +35,11 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
 
     private async Task SynchronizeInBackgroundAsync()
     {
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return;
+        }
+
         var stopwatch = Stopwatch.StartNew();
         logger.BackgroundOperationStarted("routing synchronization");
         try
@@ -42,6 +47,11 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
             await synchronizationGate.WaitAsync().ConfigureAwait(false);
             try
             {
+                if (Volatile.Read(ref disposed) != 0)
+                {
+                    return;
+                }
+
                 await Task.Run(Synchronize).ConfigureAwait(false);
             }
             finally
@@ -112,7 +122,15 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
         router.ActivityDetected -= OnActivityDetected;
         var stopwatch = Stopwatch.StartNew();
         logger.ShutdownStepStarted("MIDI router");
-        router.Dispose();
+        synchronizationGate.Wait();
+        try
+        {
+            router.Dispose();
+        }
+        finally
+        {
+            synchronizationGate.Release();
+        }
         logger.ShutdownStepCompleted("MIDI router coordinator", stopwatch.ElapsedMilliseconds);
     }
 }

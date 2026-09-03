@@ -8,8 +8,6 @@ public sealed record MidiRoutingMessage(
 {
     public int? Channel => MidiChannelCodec.ReadChannel(Words);
 
-    public MidiRoutingMessage WithWords(IReadOnlyList<uint> words)
-        => this with { Words = words };
 }
 
 public static class MidiChannelCodec

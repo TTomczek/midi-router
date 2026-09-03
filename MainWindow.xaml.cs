@@ -78,7 +78,8 @@ public partial class MainWindow : Window
         catch (Exception exception)
         {
             logger.BackgroundOperationFailed(exception, "initial device refresh", stopwatch.ElapsedMilliseconds);
-            throw;
+            viewModel.StatusMessageFromRouter($"MIDI device refresh failed: {exception.Message}");
+            return;
         }
 
         stopwatch.Restart();
@@ -91,7 +92,7 @@ public partial class MainWindow : Window
         catch (Exception exception)
         {
             logger.BackgroundOperationFailed(exception, "routing initialization", stopwatch.ElapsedMilliseconds);
-            throw;
+            viewModel.StatusMessageFromRouter($"MIDI routing initialization failed: {exception.Message}");
         }
     }
 
@@ -336,6 +337,7 @@ public partial class MainWindow : Window
     {
         logger.ShutdownStarted(0, Environment.CurrentManagedThreadId);
         ContentRendered -= MainWindow_ContentRendered;
+        ExecuteShutdownStep(nameof(routerCoordinator), () => routerCoordinator?.Dispose());
         ExecuteShutdownStep(nameof(viewModel), viewModel.Dispose);
         if (profileManager is not null)
         {
@@ -343,7 +345,6 @@ public partial class MainWindow : Window
             profileManager.ActiveProfileChanged -= ProfileManager_ActiveProfileChanged;
             profileManager.ProfilesChanged -= ProfileManager_ProfilesChanged;
         }
-        ExecuteShutdownStep(nameof(routerCoordinator), () => routerCoordinator?.Dispose());
         ExecuteShutdownStep("tray icon and menu", () =>
         {
             trayIcon.MouseClick -= TrayIcon_MouseClick;
