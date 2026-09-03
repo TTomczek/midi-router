@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace midi_router;
 
@@ -34,23 +35,36 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
 
     private async Task SynchronizeInBackgroundAsync()
     {
-        await synchronizationGate.WaitAsync().ConfigureAwait(false);
+        var stopwatch = Stopwatch.StartNew();
+        logger.BackgroundOperationStarted("routing synchronization");
         try
         {
-            await Task.Run(Synchronize).ConfigureAwait(false);
+            await synchronizationGate.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await Task.Run(Synchronize).ConfigureAwait(false);
+            }
+            finally
+            {
+                synchronizationGate.Release();
+            }
+            logger.BackgroundOperationCompleted("routing synchronization", stopwatch.ElapsedMilliseconds);
         }
         catch (InvalidOperationException exception)
         {
+            logger.BackgroundOperationFailed(exception, "routing synchronization", stopwatch.ElapsedMilliseconds);
             devices.StatusMessageFromRouter(exception.Message);
         }
         catch (System.Runtime.InteropServices.COMException exception)
         {
+            logger.BackgroundOperationFailed(exception, "routing synchronization", stopwatch.ElapsedMilliseconds);
             devices.StatusMessageFromRouter(
                 $"MIDI routing could not be synchronized: {exception.Message}");
         }
-        finally
+        catch (Exception exception)
         {
-            synchronizationGate.Release();
+            logger.BackgroundOperationFailed(exception, "routing synchronization", stopwatch.ElapsedMilliseconds);
+            throw;
         }
     }
 
@@ -96,6 +110,9 @@ public sealed class MidiRouterDeviceCoordinator : IDisposable
 
         devices.RoutingStateChanged -= OnRoutingStateChanged;
         router.ActivityDetected -= OnActivityDetected;
+        var stopwatch = Stopwatch.StartNew();
+        logger.ShutdownStepStarted("MIDI router");
         router.Dispose();
+        logger.ShutdownStepCompleted("MIDI router coordinator", stopwatch.ElapsedMilliseconds);
     }
 }

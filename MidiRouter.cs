@@ -187,8 +187,11 @@ public sealed class MidiRouter : IDisposable
             return;
         }
 
+        logger.LogInformation("MIDI router shutdown started: physicalEndpointCount={PhysicalEndpointCount}, virtualEndpointOpen={VirtualEndpointOpen}.",
+            physical.Count, virtualEndpoint?.IsOpen == true);
         foreach (var deviceId in physical.Keys.ToArray())
         {
+            logger.LogDebug("MIDI router deactivating endpoint: {DeviceId}.", deviceId);
             Deactivate(deviceId);
         }
 
@@ -201,5 +204,6 @@ public sealed class MidiRouter : IDisposable
         }
 
         endpoints.Dispose();
+        logger.LogInformation("MIDI router shutdown completed.");
     }
 }

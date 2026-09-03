@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using WpfApplication = System.Windows.Application;
@@ -307,6 +308,9 @@ public sealed class MidiInputDeviceViewModel : INotifyPropertyChanged, IDisposab
         {
             row.Dispose();
         }
+        var stopwatch = Stopwatch.StartNew();
+        logger.ShutdownStepStarted("MIDI device monitor");
         monitor.Dispose();
+        logger.ShutdownStepCompleted("MIDI input device view model", stopwatch.ElapsedMilliseconds);
     }
 }

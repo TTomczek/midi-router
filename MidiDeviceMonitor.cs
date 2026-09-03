@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace midi_router;
 
@@ -110,11 +111,15 @@ public sealed class MidiDeviceMonitor : IDisposable
 
         provider.DevicesChanged -= OnDevicesChanged;
         provider.ProviderError -= OnProviderError;
+        var stopwatch = Stopwatch.StartNew();
+        logger.ShutdownStepStarted("MIDI input device provider");
         provider.Dispose();
+        logger.ShutdownStepCompleted("MIDI input device provider", stopwatch.ElapsedMilliseconds);
         Publish(new DeviceOverviewSnapshot(
             Array.Empty<MidiInputDevice>(),
             DeviceOverviewState.Stopped,
             "MIDI device monitoring stopped."));
         refreshGate.Dispose();
+        logger.ShutdownStepCompleted("MIDI device monitor", stopwatch.ElapsedMilliseconds);
     }
 }

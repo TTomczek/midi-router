@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Forms = System.Windows.Forms;
 using Controls = System.Windows.Controls;
@@ -14,6 +15,7 @@ public partial class MainWindow : Window
     private readonly ThemeSettingsViewModel themeSettings;
     private readonly ProfileManager? profileManager;
     private readonly ILoggerFactory? loggerFactory;
+    private readonly ILogger<MainWindow> logger;
     private MidiRouterDeviceCoordinator? routerCoordinator;
     private bool routingInitializationStarted;
 
@@ -26,6 +28,9 @@ public partial class MainWindow : Window
         InitializeComponent();
         this.themeSettings = themeSettings;
         this.loggerFactory = loggerFactory;
+        this.logger = loggerFactory?.CreateLogger<MainWindow>() ?? LoggerFactory
+            .Create(builder => builder.AddDebug())
+            .CreateLogger<MainWindow>();
         this.profileManager = profileManager;
         DataContext = themeSettings;
         trayMenu = new Forms.ContextMenuStrip();
@@ -63,8 +68,31 @@ public partial class MainWindow : Window
     private async void MainWindow_ContentRendered(object? sender, EventArgs e)
     {
         ContentRendered -= MainWindow_ContentRendered;
-        await Task.Run(() => viewModel.RefreshAsync());
-        await Task.Run(InitializeRouting);
+        var stopwatch = Stopwatch.StartNew();
+        logger.BackgroundOperationStarted("initial device refresh");
+        try
+        {
+            await Task.Run(() => viewModel.RefreshAsync());
+            logger.BackgroundOperationCompleted("initial device refresh", stopwatch.ElapsedMilliseconds);
+        }
+        catch (Exception exception)
+        {
+            logger.BackgroundOperationFailed(exception, "initial device refresh", stopwatch.ElapsedMilliseconds);
+            throw;
+        }
+
+        stopwatch.Restart();
+        logger.BackgroundOperationStarted("routing initialization");
+        try
+        {
+            await Task.Run(InitializeRouting);
+            logger.BackgroundOperationCompleted("routing initialization", stopwatch.ElapsedMilliseconds);
+        }
+        catch (Exception exception)
+        {
+            logger.BackgroundOperationFailed(exception, "routing initialization", stopwatch.ElapsedMilliseconds);
+            throw;
+        }
     }
 
     private void InitializeRouting()
@@ -306,19 +334,42 @@ public partial class MainWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        logger.ShutdownStarted(0, Environment.CurrentManagedThreadId);
         ContentRendered -= MainWindow_ContentRendered;
-        viewModel.Dispose();
+        ExecuteShutdownStep(nameof(viewModel), viewModel.Dispose);
         if (profileManager is not null)
         {
             profileManager.Diagnostic -= ProfileManager_Diagnostic;
             profileManager.ActiveProfileChanged -= ProfileManager_ActiveProfileChanged;
             profileManager.ProfilesChanged -= ProfileManager_ProfilesChanged;
         }
-        routerCoordinator?.Dispose();
-        trayIcon.MouseClick -= TrayIcon_MouseClick;
-        trayIcon.Visible = false;
-        trayIcon.Dispose();
-        trayMenu.Dispose();
+        ExecuteShutdownStep(nameof(routerCoordinator), () => routerCoordinator?.Dispose());
+        ExecuteShutdownStep("tray icon and menu", () =>
+        {
+            trayIcon.MouseClick -= TrayIcon_MouseClick;
+            trayIcon.Visible = false;
+            trayIcon.Dispose();
+            trayMenu.Dispose();
+        });
+        var stopwatch = Stopwatch.StartNew();
+        logger.ShutdownStepStarted("MainWindow.OnClosed");
         base.OnClosed(e);
+        logger.ShutdownStepCompleted("MainWindow.OnClosed", stopwatch.ElapsedMilliseconds);
+    }
+
+    private void ExecuteShutdownStep(string step, Action action)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        logger.ShutdownStepStarted(step);
+        try
+        {
+            action();
+            logger.ShutdownStepCompleted(step, stopwatch.ElapsedMilliseconds);
+        }
+        catch (Exception exception)
+        {
+            logger.ShutdownStepFailed(exception, step, stopwatch.ElapsedMilliseconds);
+            throw;
+        }
     }
 }

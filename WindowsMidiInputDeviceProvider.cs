@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using Windows.Devices.Midi2;
 using Windows.Devices.Midi2.Enumeration;
 
@@ -148,8 +149,13 @@ public sealed class WindowsMidiInputDeviceProvider : IMidiInputDeviceProvider
             watcher.Removed -= OnRemoved;
             watcher.EnumerationCompleted -= OnEnumerationCompleted;
             watcher.Stopped -= OnStopped;
+            var stopwatch = Stopwatch.StartNew();
+            logger.LogInformation("MIDI input watcher shutdown started.");
             watcher.Stop();
             watcher = null;
+            logger.LogInformation(
+                "MIDI input watcher shutdown completed: elapsedMs={ElapsedMs}.",
+                stopwatch.ElapsedMilliseconds);
         }
     }
 }

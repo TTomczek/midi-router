@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using Windows.Devices.Midi2;
 using Windows.Devices.Midi2.Enumeration;
 using Windows.Devices.Midi2.Transports.Virtual;
@@ -86,10 +87,18 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
             return;
         }
 
+        logger.LogInformation(
+            "MIDI routing endpoint provider shutdown started: endpointCount={EndpointCount}, virtualDevicePresent={VirtualDevicePresent}.",
+            endpoints.Count, virtualDevice is not null);
+        var stopwatch = Stopwatch.StartNew();
         foreach (var endpoint in endpoints.ToArray())
         {
+            logger.LogDebug("MIDI routing endpoint shutdown started: connectionId={ConnectionId}, virtual={IsVirtual}.",
+                endpoint.ConnectionId, endpoint.IsVirtual);
             endpoint.Dispose();
             session.DisconnectEndpointConnection(endpoint.ConnectionId);
+            logger.LogDebug("MIDI routing endpoint shutdown completed: connectionId={ConnectionId}.",
+                endpoint.ConnectionId);
         }
 
         endpoints.Clear();
@@ -102,6 +111,9 @@ public sealed class WindowsMidiRoutingEndpointProvider : IMidiRoutingEndpointPro
         session.Dispose();
         logger.SessionDestroyed(sessionName, sessionId);
         virtualDevice = null;
+        logger.LogInformation(
+            "MIDI routing endpoint provider shutdown completed: elapsedMs={ElapsedMs}.",
+            stopwatch.ElapsedMilliseconds);
     }
 
     private sealed class WindowsMidiRoutingEndpoint : IMidiRoutingEndpoint
